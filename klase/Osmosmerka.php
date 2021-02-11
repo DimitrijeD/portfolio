@@ -227,6 +227,7 @@ class Osmosmerka
 		}
 	}
 // --------------------------------------------------------------------------------------------------------------------------
+	/*
 	public function da_li_rec_ima_donju_crtu_striktno($rec = '')
 	{
 		// brojac koliko donjih crta (_) ima u stringu $rec
@@ -250,6 +251,7 @@ class Osmosmerka
 			return TRUE;
 		}	
 	}
+	*/
 // --------------------------------------------------------------------------------------------------------------------------
 	public function da_li_rec_ima_donju_crtu($rec = '')
 	{
@@ -293,6 +295,32 @@ class Osmosmerka
 				} 
 			}
 		}
+ 		
+		// Drugi nivo odlucivanja da li da se salje upit ili ne, na osnovu broja _ u stringu i njegove duzine
+		// npr ako je rec duzine 7 karaktera: "asdfgh_" vrlo je mala sansa da postoji takva rec u bazi
+		// jedino je pitanje koje brojeve koristiti za odredjene duzine
+		// ocito kako opada duzina stringa, tako treba da raste broj _ u njemu kako bi se ispuni gornji kriterijum
+		/*
+		
+						duzina stringa   		maksimum brojac_donjih_crta za odredjenu duzinu
+						12						8			
+						11						7
+						10						7
+						9						6
+						8						6
+						7						5
+						6						5
+						5						4
+						4						3  ovde je vec otvoren problem, recimo da krenem sa pretpostavkom da mora biti barem ovoliko xd
+						3						3  ocito ovde mora biti 3 kako bi se mogle napraviti sve 3*k i r*3 osm
+
+		znaci da string od 5 karaktera: "_ _ _ _r" predstavlja dozvoljen upit, isto kao i "_ _ _ar" itd.
+		kod treba da bude : 
+			-koja je duzina stringa(ptua svejedno)
+			-koliko ima donjih crta
+			ako je broj donjih crta manji ili jednak sa maksimumom(gore iz tabele) 
+				return true
+		*/
 
 		if($this->brojac_donjih_crta <= $this->min_donjih_crta)
 		{
