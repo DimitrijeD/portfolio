@@ -11,6 +11,7 @@
 		</ul>
 
 		<?php
+		var_dump('kjhasdbkajb');
 		require_once 'osnova/inicijalizacija.php';
 		// var_dump(Sesija::postoji('home'));
 		if(Sesija::postoji('home') AND Sesija::vrati('home') != ''){
