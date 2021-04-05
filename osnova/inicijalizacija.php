@@ -20,7 +20,7 @@ $GLOBALS['niz_konfiguracija'] = array(
 );
 */
 // ------------------------------------------------------------Remote sql conn --------------------------------------------------
-var_dump('skjdfbsfdsd');
+
 $GLOBALS['niz_konfiguracija'] = array(
 	'mysql' => array (
 		'domacin' => "remotemysql.com",  // host
@@ -62,12 +62,12 @@ require_once 'funkcije/asm_uklanjanje_polja.php';
 require_once 'funkcije/da_li_je_sav_str_latinicni.php';
 require_once 'funkcije/da_li_je_sav_str_cirilicni.php';
 // otvori sve nizove pisama
-require_once 'nizovi_slova_pisama\nizovi_slova_pisama.php';
+require_once 'nizovi_slova_pisama/nizovi_slova_pisama.php';
 
 // za numericku matematiku
-require_once 'funkcije_interpolacije\gaus_jordan_metoda_eliminacije_pokusaj_2.php';
-require_once 'funkcije_interpolacije\sortiranje_po_glavnoj_dijagonali.php';
-require_once 'funkcije_interpolacije\formiranje_matrice.php';
+require_once 'funkcije_interpolacije/gaus_jordan_metoda_eliminacije_pokusaj_2.php';
+require_once 'funkcije_interpolacije/sortiranje_po_glavnoj_dijagonali.php';
+require_once 'funkcije_interpolacije/formiranje_matrice.php';
 
 //------------------------------------------------------------------------------------------------------------------------
 // var_dump(Kolacic::kolacic_postoji(Konfiguracija::vrati_konf('zapamti_me/ime_kolacica')));
