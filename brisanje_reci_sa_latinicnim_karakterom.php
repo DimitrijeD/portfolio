@@ -1,32 +1,73 @@
+<?php
+require_once 'osnova/inicijalizacija.php';
+$korisnik = new Korisnik();
+
+if (!$korisnik->je_ulogovan_k()) 
+{
+	Preusmeri::na('registracija.php');
+}
+if(!($korisnik->ima_prava('admin')) ){
+	Preusmeri::na('pocetna_stranica.php');
+} 
+?>
 <!DOCTYPE html>
 <html>
 	<head>
 		<link rel="stylesheet" href="./css/stil.css">
+		<title>Чишћење базе</title>
 	</head>
 <body>
 	<div class="container">
-		<?php
-		require_once 'osnova/inicijalizacija.php';
-		$korisnik = new Korisnik();
-		if(!($korisnik->ima_prava('admin')) ){
-			Preusmeri::na('pocetna_stranica.php');
-		} 
-		?>
+		<ul id="stranice">
+			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
+			<li><a href="igraOsmosmerka.php"> Осмосмерка</a></li>
+			<li><a href="kvadratna_spl.php"> Интерполација</a></li>
+			<li><a href="asimetricna_osmosmerka.php">Асиметрична осмосмерка</a></li>
+			<div class="dropdown">
+				<div class="dropbtn">Korisnik</div>
+					<div class="dropdown-content">
+						<?php	
+						if ($korisnik->je_ulogovan_k())
+						{	?>		
+						<a href="profil.php?korisnik=<?php echo $korisnik->podaci_k()->id; ?>"> Профил </a> 
+						<?php } ?>	
+						<a href="azuriranje.php"> Промени име </a>
+						<a href="promeni_sifru.php"> Промени шифру </a>
+					</div>
+			</div>
 
-		<ul>
-			<li><a href="pocetna_stranica.php"> Почетна страница </a></li>
-			<li><a href="igraOsmosmerka.php"> Игра осмосмерка </a></li>
-			<li><a href="admin_stranica.php"> Унос речи у осмосмерку </a></li>
+			<?php			
 
-			<li><a href="odjava.php"> Одјава </a></li>
-		</ul><br>
-		<ul>
-			<li><a href="brisanje_reci_sa_neparnim_brojem_karaktera.php"> Брисање свих речи са непарним бројем карактера </a></li>
+			if( ($korisnik->ima_prava('admin')) ) // ako je korisnik admin, prikazi mu ostale linkove
+			{	
+			?>	
+		
+			<div class="dropdown">
+				<div class="dropbtn">Алати за базу</div>
+					<div class="dropdown-content">
+						<a href="admin_stranica.php">Админ страница</a>						
+						<a href="brisanje_reci_sa_neparnim_brojem_karaktera.php"> Брисање свих речи са непарним бројем карактера </a>
+						<a href="brisanje_reci_sa_latinicnim_karakterom.php"> Брисање свих речи са латиничним карактером </a>						
+						<a href="glomazni_unos_reci.php"> Алат за масовни/гломазни/bulk унос речи у табелу за попуњавање осмосмерки </a>
+						<a href="test_tabele_osmosmerke.php"> Тест валидности табела за речи (reci_osm_N) </a>
+					</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropbtn">Алати за осмосмерке</div>
+					<div class="dropdown-content">
+						<a href="to_do_list.php"> to_do_list </a>
+						<a href="testiranje_rada_klase_osmosmerka_templejt.php"> Алат за тестирање рада класе Osmosmerka_tempejt </a>
+						<a href="pravljenje_ogromnih_osmosmerki.php"> Страница за прављење огромних осмосмерки </a> 
+					</div>
+			</div>
+			<?php } ?>
+			<li style="float: right; margin: 0; padding: 0px 5px"><a style="margin: 10px; padding: 5px 10px 5px 5px" href="odjava.php">Одјава</a></li>	
 		</ul>
+		<h2> Брисање свих речи са латиничним карактером </h2>
 
 		<?php
 		$bp_instanca = Baza_podataka::vrati_instancu();
-		$bp_instanca->pronadji('reci_osmosmerke', array('rec', 'LIKE', '%')); // mora trenutno ovako jer metoda priprema ocekuje array i poziva upit samo ako ima 3 elementa u nizu 
+		$bp_instanca->pronadji('reci_osmosmerke', array('rec', 'LIKE', '%')); 
 		$niz_pretrage = $bp_instanca->rezultati_bp();
 		$niz_pretrage = json_decode(json_encode($niz_pretrage), true);
 		// print_r($niz_pretrage); - sve reci u nizu
@@ -66,9 +107,12 @@
 				echo "<p1>У табели -reci_osmosmerke- нема речи које имају латинични карактер у себи!</p>";
 			}
 		echo "<br>" . "<p1>Ако је листа празна, онда је табела попуњена само ћириличним словима али и даље није урађен код за проверу осталих карактера као што су:  ; ' ! # ...  </p1>";
-
-		//mogao sam jednostavno da poredim svaki karakter sa heksadecimalnim vrednostima cirilicnih karaktera..... kako god.. posle
 		?>
+
+		<div id="content-wrap">
+			<footer id="footer"><small>&copy; Copyright 2021.   Dimitrije Drakulić</small></footer>
+		</div>	
+		
 	</div>
 </body>
 </html>

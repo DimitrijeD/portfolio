@@ -13,7 +13,7 @@ if (!$korisnik->je_ulogovan_k())
 <html>
 <head>
 	<link rel="stylesheet" href="./css/stil.css">
-	<title>Игра осмосмерка</title>
+	<title>Асиметрична осмосмерка</title>
 	<script src="java_script/java_script_sve.js"> 
 	</script>
 </head>
@@ -22,9 +22,10 @@ if (!$korisnik->je_ulogovan_k())
 <div id="container" class="container"> <!-- !!!!!!!!!!! -->
 	<ul id="stranice">
 			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
-			<li><a href="igraOsmosmerka.php"> Осмосмерка</a></li>
-			<li><a href="kvadratna_spl.php"> Интерполација</a></li>
+			<li><a href="igraOsmosmerka.php">Осмосмерка</a></li>
+			<li><a href="kvadratna_spl.php">Интерполација</a></li>
 			<li><a href="asimetricna_osmosmerka.php">Асиметрична осмосмерка</a></li>
+			
 			<div class="dropdown">
 				<div class="dropbtn">Korisnik</div>
 					<div class="dropdown-content">
@@ -65,28 +66,30 @@ if (!$korisnik->je_ulogovan_k())
 			<?php } ?>
 			<li style="float: right; margin: 0; padding: 0px 5px"><a style="margin: 10px; padding: 5px 10px 5px 5px" href="odjava.php">Одјава</a></li>	
 	</ul>
-	<h2> Игра осмосмерка </h2>
+	<h2> Асиметрична осмосмерка </h2>
 	<details>
 		<summary>Додатне информације</summary>
-		<p>Само се једна осмосмерка прави што значи да неће увек бити: потпуна са решењем или са свим пољима попуњеним словима.</p>
-		<p>Најмања осмосмерка која може да се формира је величине 3*3.</p>
-		<p>Ако се унесу превелике вредности осмосмерке формираће се полупразна осмосмерка и потрајаће пар секунди.</p>			
+		<p>Прво направите таблицу кликом на дугме "Формирај нову таблицу", уклоните жељени број поља и од ње напраите осмосмерку кликом на "Направи осмосмерку".</p>
+		<p>Одабиром димензија таблице, формира се ред*колона структура осмосмерке у којој се подразумева да ће сва поља бити коришћена за прављење осмосмерке.</p>
+		<p>Црвена поља ће бити коришћена за прављење осмосмерки, док не црвена (светло плава-леви клик на поље) неће.</p>
+		<p>Ако се унесу превелике вредности осмосмерке формираће се полупразна осмосмерка и потрајаће пар секунди.</p>
+		<p>Само се једна осмосмерка прави што значи да неће увек бити: потпуна са решењем или са свим пољима попуњеним словима.</p>			
 		<p>Тренутно не постоји горње ограничење димензија осмосмерки.</p>
-		<p>Алгоритам је оптимизован за ~ 15*15 до ~ 25*25.</p>
+		<p>Алгоритам је оптимизован за ~ 15*15 до 25*25.</p>
 	</details>
 	<!-- forma_o_i  - za osmosmerku i interpolaciju -->
 	<form id="forma_o_i" action="" method="post">
-		<div id="paralelno">
-			<label for="red_velicina_osmosmerke">Унесите висину (<strong>ред</strong>) осмосмерке</label>
-			<input type="text" name="red_velicina_osmosmerke" id="red_velicina_osmosmerke" autofocus="autofocus" autocomplete="off">			
-		</div>
-		<div id="paralelno">
-			<label for="kolona_velicina_osmosmerke">Унесите ширину (<strong>колону</strong>) осмосмерке</label>
-			<input type="text" name="kolona_velicina_osmosmerke" id="kolona_velicina_osmosmerke" autocomplete="off">
-		</div>
+		
+		<!-- <label for="red_velicina_osmosmerke">Унесите висину (<strong>ред</strong>) осмосмерке</label> -->
+		<input type="hidden" type="text" name="red_velicina_osmosmerke" id="red_velicina_osmosmerke" autocomplete="off" value="">
+
+		<!-- <label for="kolona_velicina_osmosmerke">Унесите ширину (<strong>колону</strong>) осмосмерке</label> -->
+		<input type="hidden" type="text" name="kolona_velicina_osmosmerke" id="kolona_velicina_osmosmerke" autocomplete="off">
+
 		<div id="paralelno">
 			<label for="reci_od_korisnika">Унесите <strong>речи</strong> које желите да буду у осмосмерци (опционално). Сваку реч одвојите зарезом</label>
 			<input type="text" name="reci_od_korisnika" id="reci_od_korisnika" autocomplete="off">
+			
 		</div>
 
 		<?php 
@@ -94,64 +97,92 @@ if (!$korisnik->je_ulogovan_k())
 		{
 		?>
 
+			
 			<div id="paralelno">
 				<input type="radio" id="prikazi_podatke" name="prikazi_podatke" value="true">
 				<label id="prikazi_podatke" for="prikazi_podatke">Прикажи додатне податке</label>
+		
 			</div>
 
 			<div id="paralelno">
 				<input type="radio" id="prikazi_puteve" name="prikazi_puteve" value="true">
 				<label id="prikazi_puteve" for="prikazi_puteve">Прикажи све путеве који пролазе кроз поље (onmouseover event)</label>
+
 			</div>
 
 		<?php 
 		} 
 		?>
-
-		<input type="submit" name="napravi_osmosmerku" value="Направи осмосмерку">
+		<input type="hidden" id="polja_asm_osm" value="" name="polja_asm_osm" />
+		<input  type="submit" name="napravi_osmosmerku" value="Направи осмосмерку"> <!-- onclick="Odabrana_polja_asm_osm_obj.salji();" -->
 	</form>
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	<form id="forma_o_i">
+		<div id="paralelno">
+			<label for="red">Унесите висину (<strong>ред</strong>) осмосмерке</label>
+			<input type="text" id="red" name="red" autofocus="autofocus" autocomplete="off"/><br/>  
+		</div>
+	
+
+		<div id="paralelno">
+			<label for="kolona">Унесите ширину (<strong>колону</strong>) осмосмерке</label>
+			<input type="text" id="kolona" name="kolona" autocomplete="off"/><br/>  
+		</div>
+	
+		<input type="button" value="Формирај нову таблицу" onclick="napravi_novu_tablicu()"/> 
+	</form>
+	<table id="asimetricna_osm" > <!-- onclick="Odabrana_polja_asm_osm_obj.kliknuto_polje_asm(this.id)" -->
+	<!-- onmouseover="Highlight_obj.prikazi_sve_puteve(this.id)" onmouseout="Highlight_obj.vrati_normalno_stanje(this.id)"  -->
+	</table>
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
 
 	<?php
 
 	if (Input::vrati('napravi_osmosmerku')) 
 	{
-		// kastovanje promenljivih na int
+		if( !empty(Input::vrati('polja_asm_osm')) )
+		{
+			// konvertuje json u asoc niz
+			$asim_polja = obradi_asim_polja( json_decode(Input::vrati('polja_asm_osm'), true) );
+		}
+
+		// var_dump($asim_polja);
+					// kastovanje promenljivih na int
 		$red = (int)Input::vrati('red_velicina_osmosmerke');
 		$kolona = (int)Input::vrati('kolona_velicina_osmosmerke');
-		$prikazi_puteve = null; // bice over written kasnije, cisto da n bude notuice
 		
 		$niz_kriterijum_validacija = array(
 			'red_velicina_osmosmerke' => array(
 				'obavezno' => TRUE,
-				'min_osmosmerka' => 3				
+				'velicina_osmosmerke' => 3				
 			),
 			'kolona_velicina_osmosmerke' => array(
 				'obavezno' => TRUE,
-				'min_osmosmerka' => 3				
+				'velicina_osmosmerke' => 3				
 			),	
 			'reci_od_korisnika' => array(
 				'obavezno' => FALSE,
-				// 'max_broj_reci' => ??, // da bi se znao max ogranicenje reci, mora se znati koja je dimenzija, komplikovano je...
-				'max_broj_reci' => 15, // ... nek ovako bude
+				'max_broj_reci' => 15,
 				'red' => $red,
 				'kolona' => $kolona,
-				// bool vrednost bi trebala da bude promenljiva u zavisnosti da li se prave cirilicne ili latinicne osmosmerke
+								// bool vrednost bi trebala da bude promenljiva u zavisnosti da li se prave cirilicne ili latinicne osmosmerke
 				// za sad mogu samo ciriliocne, verovatno ce tako zauvek i ostati
 				'cirilica' => TRUE 
-			)			
+			)				
 		);
-		
+
 		$validacija = new Validacija();
 		$rez_validacije = $validacija->provera_unosa($_POST, $niz_kriterijum_validacija);
 
 		if($rez_validacije->validacija_uspela())
 		{
 			$reci_od_korisnika = $validacija->vrati_reci_od_korisnika();
-			$tip_osmosmerke = "standardna";
+			$tip_osmosmerke = 'asimetricna';
 
-			$osmosmerka = new Osmosmerka($red, $kolona, $reci_od_korisnika, $korisnik->podaci_k()->id, $tip_osmosmerke);
+			$osmosmerka = new Osmosmerka($red, $kolona, $reci_od_korisnika, $korisnik->podaci_k()->id, $tip_osmosmerke, $asim_polja);
 			$osmosmerka_niz = $osmosmerka->popunjavanje_sa_korisnickim_recima();
-			// var_dump($GLOBALS['unete_reci_sa_putevima'] );
+
 			if( $korisnik->ima_prava('admin') )
 			{
 				$prikazi_podatke = Input::vrati('prikazi_podatke');
@@ -198,7 +229,7 @@ if (!$korisnik->je_ulogovan_k())
 			// -----------------------------------------------------------------------------------
 			echo napravi_spisak_reci_za_pronalazenje_u_osm($unete_reci);
 			echo "<br>";
-			echo napravi_osmosmerku_v1($osmosmerka_niz, $prikazi_puteve); 
+			echo napravi_osmosmerku_v1($osmosmerka_niz, $prikazi_puteve, $asim_polja); 
 			// forma za resenje
 			if($sve_osm["resenje_osmosmerke"]["rec_resenja"] == "/")
 			{
@@ -229,7 +260,7 @@ if (!$korisnik->je_ulogovan_k())
 	
 </div>
 
-<script> 
+<script>	
 	var osm_r_k    = <?php echo json_encode($sve_osm); ?>;
 	var unete_reci = <?php echo json_encode($unete_reci); ?>;
 	var osmosmerka_obj = osm_r_k.osmosmerka;
@@ -240,11 +271,12 @@ if (!$korisnik->je_ulogovan_k())
 
 	osmosmerka_niz = popuni_osmosmerku(instanciraj_tablicu(red, kolona), osmosmerka_obj, red, kolona);
 
-	let resavanje_osmosmerke_obj = new Resavanje_osmosmerke(null, null, unete_reci);
-	let aktivno_polje_obj        = new Aktivno_polje();
-	let pronadjene_reci_obj      = new Pronadjene_reci();
-	let konacno_resenje_obj      = new Konacno_resenje(resenje_osmosmerke);
-	let Highlight_obj            = new Highlight(unete_reci);
+	let resavanje_osmosmerke_obj   = new Resavanje_osmosmerke(null, null, unete_reci);
+	let aktivno_polje_obj          = new Aktivno_polje();
+	let pronadjene_reci_obj        = new Pronadjene_reci();
+	let konacno_resenje_obj        = new Konacno_resenje(resenje_osmosmerke);
+	let Highlight_obj              = new Highlight(unete_reci);
+	
 </script>
 
 </body>

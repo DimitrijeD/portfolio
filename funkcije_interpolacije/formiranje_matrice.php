@@ -52,24 +52,10 @@ function formiranje_matrice($niz_cvorovi, $niz_intervali)
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-// formira niz na osnovu stringa inputa za cvorove
-function niz_cvorovi($cvorovi)
-{
-	$rez = array();
-	$niz_cvorovi = explode(" / ", $cvorovi);
 
-	for($i = 0; $i < count($niz_cvorovi); $i++)
-	{
-		$rez[$i] = explode(",", $niz_cvorovi[$i]);
-		$rez[$i][0] = (float)$rez[$i][0];
-		$rez[$i][1] = (float)$rez[$i][1];
-	}
-
-	return $rez;
-}
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------------
-
+/*
 function niz_tacke($tacke_x)
 {
 	$rez = array();
@@ -82,7 +68,7 @@ function niz_tacke($tacke_x)
 	}
 	return $rez;
 }
-
+*/
 // ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 function niz_intervali($niz_cvorovi)

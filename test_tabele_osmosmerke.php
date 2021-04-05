@@ -1,55 +1,132 @@
+<?php
+require_once 'osnova/inicijalizacija.php';
+$korisnik = new Korisnik();
+if (!$korisnik->je_ulogovan_k()) 
+{
+	Preusmeri::na('registracija.php');
+}
+if( (!$korisnik->ima_prava('admin')) ) 
+{
+	Preusmeri::na('pocetna_stranica.php');
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
 	<link rel="stylesheet" href="./css/stil.css">
+	<title>Тест базе</title>
 </head>
 <body>
 	<div class="container">
-		<ul>
+		<ul id="stranice">
 			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
-			<li><a href="igraOsmosmerka.php"> Игра осмосмерка </a></li>
-			<li><a href="odjava.php"> Одјава </a></li>
+			<li><a href="igraOsmosmerka.php"> Осмосмерка</a></li>
+			<li><a href="kvadratna_spl.php"> Интерполација</a></li>
+			<li><a href="asimetricna_osmosmerka.php">Асиметрична осмосмерка</a></li>
+			
+
+			<?php			
+			if( ($korisnik->ima_prava('admin')) ) // ako je korisnik admin, prikazi mu ostale linkove
+			{
+			?>	
+		
+			<div class="dropdown">
+				<div class="dropbtn">Алати за базу</div>
+					<div class="dropdown-content">
+						<a href="admin_stranica.php">Админ страница</a>		
+						<a href="brisanje_reci_sa_neparnim_brojem_karaktera.php"> Брисање свих речи са непарним бројем карактера </a>
+						<a href="brisanje_reci_sa_latinicnim_karakterom.php"> Брисање свих речи са латиничним карактером </a>						
+						<a href="glomazni_unos_reci.php"> Алат за масовни/гломазни/bulk унос речи у табелу за попуњавање осмосмерки </a>
+						<a href="test_tabele_osmosmerke.php"> Тест валидности табела за речи (reci_osm_N) </a>
+					</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropbtn">Алати за осмосмерке</div>
+					<div class="dropdown-content">
+						<a href="testiranje_rada_klase_osmosmerka_templejt.php"> Алат за тестирање рада класе Osmosmerka_tempejt </a>
+						<a href="pravljenje_ogromnih_osmosmerki.php"> Страница за прављење огромних осмосмерки </a> 
+					</div>
+			</div>
+			<?php } ?>
+			<li style="float: right; margin: 0; padding: 0px 5px"><a style="margin: 10px; padding: 5px 10px 5px 5px" href="odjava.php">Одјава</a></li>	
 		</ul>
 	
 	<?php
-	require_once 'osnova/inicijalizacija.php';
-	$korisnik = new Korisnik();
 	if( !($korisnik->ima_prava('admin')) ){
 		Preusmeri::na('pocetna_stranica.php');
 	}
 // ----------------------------------------------------------------------------------------------------------------------
 	$bp_instanca = Baza_podataka::vrati_instancu();
 	$ukupan_broj_reci = 0;
-	echo "test za proveru da li u tabelama reci_osm_N postoje reci koje nisu N duzine u slucaju da nisam dobro razdvojio tabelu reci_osmosmerke";
+
+	echo '<div class="dodatni_podaci">';
+	echo '<h3>Тест за проверу да ли у табелама <strong> "reci_osm_N" </strong> постоје <strong> речи </strong> које нису дужине N ( gde N &#8712; [3,...12] ). </h3>';
+
+	$broj_reci_po_tabelama = array();
+	$sve_kvarne_reci = array();
+	$tablica = '<table id="tablica_baza">'; // za prikaz na ekranu
+	$tablica .= '<tr>	<td>Табела базе</td>	<td>Бр. речи у табели</td>	   <td>Бр. кварних речи</td>    <td>Листа кварних речи</td>	</tr>';
 	for($n = 3; $n <= 12; $n++)
 	{
-		$tabela = "reci_osmosmerke_"."{$n}";
+		$tablica .= '<tr>';
+		$tabela = "reci_osmosmerke_"."{$n}"; // tabela baze podataka
+		$tablica .= '<td>' . $tabela . '</td>';
+		$kvarna_rec = '';
+		$br_kvarnih_reci = 0;
+		$lista_kvarnih_reci = '';
+
 		$bp_instanca->pronadji($tabela, array('rec', 'LIKE', '%')); 
 		$niz_pretrage = $bp_instanca->rezultati_bp();
 		$niz_pretrage = json_decode(json_encode($niz_pretrage), true);
 		$broj_reci_koje_pripadaju = 0;
 
-		echo "<br>";
-		echo "Tabela {$tabela}";
+		/*echo "<h4>Tabela {$tabela}</h4>";*/
 
 		for($rec = 0; $rec < count($niz_pretrage); $rec++)
 		{
 			if( mb_strlen($niz_pretrage[$rec]['rec']) != $n){
-				echo "<br>" . $niz_pretrage[$rec]['rec'] . "-ova rec ne pripada ovoj tabeli" . "<br>";
+				$duzina_reci_iz_baze = mb_strlen($niz_pretrage[$rec]['rec']);
+
+				$kvarna_rec .= '<h5 style="background-color:#ff8080; margin-top:30px;color:black;font-size: 20px" >Пажња:</h5>';
+				$kvarna_rec .= '</h5 style="background-color:#ff8080;">' . '<strong style="font-size: 18px;color:black;">'. $niz_pretrage[$rec]['rec'] . '</strong> реч не припада у табели <strong>' . $tabela . '</strong></h5>';				
+				$kvarna_rec .= "</h5>Реч је дужине <strong>{$duzina_reci_iz_baze}</strong> слова, а мора да буде тачно <strong>{$n}</strong> .</h5>";		
+				$br_kvarnih_reci++;
+				$lista_kvarnih_reci .=  $niz_pretrage[$rec]['rec'] . ", ";
 			} else {
 				$broj_reci_koje_pripadaju++;
 			}
 		}
-		$ukupan_broj_reci = $ukupan_broj_reci + $broj_reci_koje_pripadaju;
-		echo "<br>"."U tabeli ima {$broj_reci_koje_pripadaju} reci, proveriti u phpmyadmin da li ovaj broj odgovara pripadajucoj tabeli za konacnu proveru"."<br>";
-		echo "<br>";
-		echo "-------------------------------------------------------------";
-		echo "<br>";
+
+		$broj_reci_po_tabelama[$tabela] = $broj_reci_koje_pripadaju;
+		$ukupan_broj_reci += $broj_reci_koje_pripadaju;
+		$tablica .= "<td>" . $broj_reci_po_tabelama[$tabela] . "</strong></td>";
+		$tablica .= '<td>' . $br_kvarnih_reci . '</td>';
+		if(!empty($lista_kvarnih_reci))
+		{
+			$tablica .= "<td><strong>" . $lista_kvarnih_reci . "</strong></td>";
+		} else {
+			$tablica .= "<td><strong>/</strong></td>";
+		}
+		$tablica .= '</tr>';
+
+		if(!empty($kvarna_rec)){
+			$sve_kvarne_reci[] = $kvarna_rec;
+		}
+		
 	}
-	echo "<br>";
-	echo "-------------------------------------------------------------";
-	echo "<br>";
-	echo "Ukupan broj reci od kojih se prave osmosmerke je {$ukupan_broj_reci}"; // isti kardinalitet kao i reci_osmosmerke. GG
+	$tablica .= '</table>';
+	echo $tablica;
+	if(!empty($sve_kvarne_reci)){
+		echo '<div id="greske">';
+		foreach ($sve_kvarne_reci as $key => $value) {
+			echo $value . ", ";
+		}
+		echo '</div>';
+	}
+
+	echo "</div>";
+	echo "<br><br><h5>Ukupan broj reci od kojih se prave osmosmerke je <strong>{$ukupan_broj_reci}</strong></h5>"; 
+	
 
 // ----------------------------------------------------------------------------------------------------------------------
 	// kod za razdvajanje tabele reci_osmosmerke na 10 tabela u kojima su reci iste duzine
@@ -138,7 +215,11 @@
 	*/
 
 	?>
-
+	
+	<div id="content-wrap">
+		<footer id="footer"><small>&copy; Copyright 2021.   Dimitrije Drakulić</small></footer>
+	</div>
+	
 	</div>
 </body>
 </html>

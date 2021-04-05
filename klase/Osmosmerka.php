@@ -3,14 +3,8 @@
 /* Niz svih unetih reci u osmosmerku
 koristim global kako bih mogao bilo gde i bilo kad da koristim reci kad mi zatrebaju, mada nema razloga da to ne bude prop klase, ali intuicija radi svoje */
 
-// treba mi njen :	ID       kako bih iz tog niza updatovao kolonu broj upotrebljenih/neuspelih formiranja osmosmerke
-
 $GLOBALS['unete_reci'] = array(); // niz koji sluzi za popunjavanje osmosmerke a da se reci ne ponavljaju
 $GLOBALS['unete_reci_sa_putevima'] = array(); // niz koji ce da sluzi za resavanje osm; sve osim resenja (posl rec)
-
-$GLOBALS['suglasnici'] = array("Б", "В", "Г", "Д", "Ђ", "Ж", "З", "Ј", "К", "Л", "Љ", "М", "Н", "Њ", "П", "С", "Т", "Ћ", "Ф", "Х", "Ц", "Ч", "Џ", "Ш");
-$GLOBALS['samoglasnici'] = array ("А", "Е", "И", "О", "У", "Р");
-// R je medju samoglasnicima jer postoje reci od vise slova u kojima nema samoglasnika npr krst, trst , ima ih dosta
 
 class Osmosmerka 
 {
@@ -25,24 +19,56 @@ class Osmosmerka
 	 	   $id_korisnika;
 
 // --------------------------------------------------------------------------------------------------------------------------
-	public function __construct($red_velicina_osmosmerke, $kolona_velicina_osmosmerke, $reci_od_korisnika, $id_korisnika)
+	public function __construct($red_velicina_osmosmerke, $kolona_velicina_osmosmerke, $reci_od_korisnika, $id_korisnika, $tip_osmosmerke, $asim_polja = null)
 	{
-		$templejt = new Osmosmerka_templejt($red_velicina_osmosmerke, $kolona_velicina_osmosmerke, array(), array(), 12);
+		$this->tip_osmosmerke = $tip_osmosmerke;
+		$this->asim_polja = array(); // ako je osmosmerka asimetricna, bice u switchu popunjena poljima
+		switch ($this->tip_osmosmerke) 
+		{
+			case 'standardna':
+				$this->_bp_tabela_osmosmerki = 'napravljene_osmosmerke';
+				break;
+			case 'ogromna':
+				$this->_bp_tabela_osmosmerki = 'ogromne_osmosmerke';
+				break;
+			case 'asimetricna':
+				$this->_bp_tabela_osmosmerki = 'napravljene_osmosmerke'; // za sad!
+				$this->asim_polja = $asim_polja;
+				break;
+			default:
+				exit("Погрешан стринг табеле прослеђен конструктору класе Осмосмерка!");
+				break;
+		}
+		$templejt = new Osmosmerka_templejt($red_velicina_osmosmerke, $kolona_velicina_osmosmerke, 12, FALSE, $asim_polja);
+
 	    $this->red_velicina_osmosmerke = $red_velicina_osmosmerke;
 	    $this->kolona_velicina_osmosmerke = $kolona_velicina_osmosmerke;
 
 	    $this->reci_od_korisnika = $reci_od_korisnika;
-	    $this->osmosmerka_niz = $templejt->formiranje_prazne_osmosmerke(); 
 
-	    $this->niz_svih_puteva = $templejt->svi_putevi();
+	    $this->osmosmerka_niz = $templejt->formiranje_prazne_osmosmerke(); 
+		
+		if($this->tip_osmosmerke === 'asimetricna')
+	    {
+	    	$this->osmosmerka_niz = ciscenje_donje_crte_iz_asm($this->osmosmerka_niz, $this->asim_polja);
+	    }	
+	   
+	    $this->niz_svih_puteva = $templejt->preuzmi_podatak_nsp_iz_fajla();
+	    
+/*	    if($this->tip_osmosmerke === 'asimetricna')
+	    {
+	    	$this->niz_svih_puteva = asm_uklanjanje_polja($this->niz_svih_puteva, $this->asim_polja);
+	    }*/	     
+	 
+	    $this->broj_puteva = count($this->niz_svih_puteva);
 
 	    $this->max_duzina_reci = $templejt->najduza_moguca_rec();
 	    
-	    
-
 	    // kako bi se uneo u tabelu u sluaju da ga nema, tj nema konacno resenje ali se moze resiti 
 		//precrtavanjem svih reci u osm 
 	    $this->resenje = '/'; 
+	    $this->polja_resenja = null;
+	    
 	    $this->bp_instanca = Baza_podataka::vrati_instancu();
 	    $this->id_korisnika = $id_korisnika;
 
@@ -53,13 +79,91 @@ class Osmosmerka
 
 	    //trenutno predstavlja ukupan broj polja u simetricnoj osmosmerci
 	    $this->broj_preostalih_polja = $templejt->broj_preostalih_polja();
+	    if($this->tip_osmosmerke === 'asimetricna')
+	    {
+	    	 $this->broj_preostalih_polja =  $this->broj_preostalih_polja - count($this->asim_polja);
+	    }
 
-	    $this->max_broj_polja = $this->broj_preostalih_polja;
+	    // $this->max_broj_polja = $this->broj_preostalih_polja; // useless?? ...
 
-	    $this->min_donjih_crta = 4;
+	    // $this->min_donjih_crta = 4;
+
+	    /* ------------------------------------------------------------------------------------------------------------------
+	    	--------------------------------- KONTROLA DOZVOLE IZVRSAVANJA UPITA ZA ODREDJENE DUZINE RECI  ------------------
+	    	sto je manja vrednost, to je veca sansa da ce dozvoliti da se izvrsi upit, mora biti veca vrednost od nule!!!!!!!
+	    */
+		if($this->tip_osmosmerke === 'asimetricna')
+	    {
+	    	// za asimetricne osmosmerke, kontrola ima vecu toleranciju (manje vrednosti) kako bi postojala veca sansa da se vrati potpuna osm
+	    	 $this->duzina_puta_sa_brojem_crta = array(
+			    	3 => 1,
+			    	4 => 1,
+			    	5 => 1,
+			    	6 => 1,
+			    	7 => 1,
+			    	8 => 1,
+			    	9 => 2,
+			       10 => 3,
+			       11 => 4,
+			       12 => 5
+	    	);
+	    } else {
+	    	 $this->duzina_puta_sa_brojem_crta = array(
+			    	3 => 1,
+			    	4 => 1,
+			    	5 => 2,
+			    	6 => 3,
+			    	7 => 4,
+			    	8 => 5,
+			    	9 => 6,
+			       10 => 6,
+			       11 => 7,
+			       12 => 7
+	    	);
+	    }	
+	   
+	    // ------------------------------------------------------------------------------------------------------------------
+
+	    $this->duzine_unetih_reci = array(
+	    	3  => 0,
+	    	4  => 0,
+	    	5  => 0,
+	    	6  => 0,
+	    	7  => 0,
+	    	8  => 0,
+	    	9  => 0,
+	    	10 => 0,
+	    	11 => 0,
+	    	12 => 0,
+	    	'kriticne_greske' => 0
+	    );
+	    $this->broj_izvrsenih_upita = 0;
+	    
 	}
 // --------------------------------------------------------------------------------------------------------------------------
 	public function vrati_niz_svih_puteva(){ return $this->niz_svih_puteva;	}
+// --------------------------------------------------------------------------------------------------------------------------
+	public function vrati_broj_puteva(){ return $this->broj_puteva;	}
+	public function vrati_velicinu_reda(){ return $this->red_velicina_osmosmerke;	}
+	public function vrati_velicinu_kolone(){ return $this->kolona_velicina_osmosmerke;	}
+	public function vrati_resenje(){ return $this->resenje;	}
+	public function vrati_polja_resenja(){ return $this->polja_resenja;	}
+	public function vrati_broj_preostalih_polja(){ return $this->broj_preostalih_polja;	}
+	
+	public function vrati_reci_od_korisnika_string()
+	{ 
+		if ($this->reci_od_korisnika == NULL) 
+		{
+			return null;
+		}
+		
+		$reci_str = '';
+		for($i = 0; $i < count($this->reci_od_korisnika); $i++)
+		{
+			$reci_str .= $this->reci_od_korisnika[$i] . ", ";
+		}	
+		return $reci_str;
+	}
 // --------------------------------------------------------------------------------------------------------------------------
 	public function popunjavanje_sa_korisnickim_recima()
 	{
@@ -67,9 +171,10 @@ class Osmosmerka
 		{
 			for ($rec_k = 0; $rec_k < count($this->reci_od_korisnika) ; $rec_k++) 
 			{ 
-				for($put_k = 0; $put_k < count($this->niz_svih_puteva); $put_k++)
+				for($put_k = 0; $put_k < $this->broj_puteva; $put_k++)
 				{
-					if( count($this->niz_svih_puteva[$put_k]) == mb_strlen($this->reci_od_korisnika[$rec_k]) )
+					if( count($this->niz_svih_puteva[$put_k]) == mb_strlen($this->reci_od_korisnika[$rec_k]) ) 
+					// duzina reci = mb_strlen($this->reci_od_korisnika[$rec_k])
 					{
 						$this->put_za_pretragu = $this->niz_svih_puteva[$put_k];
 						if ( $this->rec_moze_na_put($rec_k) )
@@ -78,7 +183,7 @@ class Osmosmerka
 							$this->unos_reci_u_osmosmerku(); 
 							$this->uspesan_unos_reci( array('rec'=>$this->reci_od_korisnika[$rec_k]) );	
 							$this->trenutan_broj_praznih_polja();
-
+							$this->duzine_unetih_reci(mb_strlen($this->reci_od_korisnika[$rec_k]));
 							break;						
 						}
 
@@ -103,28 +208,29 @@ class Osmosmerka
 			$slovo_osm = $this->osmosmerka_niz[ $this->put_za_pretragu [$polje] [0] ][$this->put_za_pretragu [$polje] [1] ];
 			if( $slovo_sp_bajtovi_k == $slovo_osm OR $slovo_osm == "_")
 			{
-
+				return true;
 			} else {
 				return false;
 			}
 		}
-		return true;
+	}
+// --------------------------------------------------------------------------------------------------------------------------
+	private function duzine_unetih_reci($koja_duzina)
+	{
+		if(isset($this->duzine_unetih_reci[$koja_duzina]))
+		{
+			$this->duzine_unetih_reci[$koja_duzina]++;
+		} else {
+			$this->duzine_unetih_reci['kriticne_greske'];
+		}
 	}
 // --------------------------------------------------------------------------------------------------------------------------
 	public function popunjavanje_osmosmerke()
 	{
-		$broj_puteva = count($this->niz_svih_puteva);
-		$this->broj_izvrsenih_upita = 0;
-
-		for($brojac_popunjavanja = 0; $brojac_popunjavanja < $broj_puteva ; $brojac_popunjavanja++)
+		for($brojac_popunjavanja = 0; $brojac_popunjavanja < $this->broj_puteva ; $brojac_popunjavanja++)
 		{
 			if($this->broj_preostalih_polja == 0 OR $this->broj_preostalih_polja < $this->max_duzina_reci )	{
 				break;	
-			}
-			// ako je preostalo manje od 20% praznih polja, unosi bilo sta samo da se popuni do 12
-			if($this->broj_preostalih_polja < $this->max_broj_polja * 0.2)
-			{
-				$this->min_donjih_crta = 1;
 			}
 
 			$this->put_za_pretragu = $this->niz_svih_puteva[$brojac_popunjavanja];
@@ -135,9 +241,9 @@ class Osmosmerka
 				if( $this->pretraga_baze() )
 				{
 					$najkvalitetnija_rec_sa_podacima = $this->kvaliteti_reci_pretrage();
-					
+					$this->duzine_unetih_reci(mb_strlen( $najkvalitetnija_rec_sa_podacima['rec'] ));
+
 					$this->razbijanje_reci_na_slova($najkvalitetnija_rec_sa_podacima);
-					// $this->razbijanje_reci_na_slova($this->niz_pretrage[0]);
 
 					$this->unos_reci_u_osmosmerku();
 					$this->uspesan_unos_reci($najkvalitetnija_rec_sa_podacima);
@@ -159,12 +265,35 @@ class Osmosmerka
 
 		$this->konverzija_osmosmerke_u_string();
 		$this->unos_osmosmerke_u_bazu();
-
-		echo "<br>" . "broj izvrsenih upita je : " . $this->broj_izvrsenih_upita .  "<br>";
-		echo "<br>" . "broj unetih reci je : " . count($GLOBALS['unete_reci']) .  "<br>";
-		echo "<br>" . "broj preostalih polja je : " . $this->broj_preostalih_polja .  "<br>";
-
 		return $this->osmosmerka_niz;
+	}
+
+// --------------------------------------------------------------------------------------------------------------------------
+
+	public function prikazi_dodatne_podatke()
+	{
+		$str = '';
+		$str .= '<h5>Broj izvršenih upita je : <strong>' . $this->broj_izvrsenih_upita .   '</strong></h5>';
+		if(count($GLOBALS['unete_reci']) === 0){
+			$str .= '<h5 style="background-color:#ff3333;">Broj unetih reči je : <strong>' . count($GLOBALS['unete_reci']) .     '</strong></h5>';
+		} else {
+			$str .= '<h5>Broj unetih reči je : <strong>' . count($GLOBALS['unete_reci']) . '</strong></h5>';
+		}
+		
+		if($this->broj_preostalih_polja !== 0){
+			$str .= '<h5 style="background-color:#ff3333; width: 30%;">Broj preostalih polja je : <strong>' . $this->broj_preostalih_polja . '</strong></h5>';
+		} else {
+			$str .= '<h5>Broj preostalih polja je : <strong>' . $this->broj_preostalih_polja . '</strong></h5>';
+		}
+		$str .= '<h4> Prikaz različitih dužina reči unetih u osmosmerku</h4>';
+		$str .= '<h5> Broj kritičnih grešaka = <strong>' . $this->duzine_unetih_reci['kriticne_greske'] . '</strong></h5>';
+		
+		foreach ($this->duzine_unetih_reci as $key => $value) {
+			if($key != 'kriticne_greske'){
+				$str .= '<h5> Broj unetih reči sa <strong>' . $key . '</strong> slova je: <strong>' .  $this->duzine_unetih_reci[$key] . '</strong></h5>';
+			}
+		}
+		return $str;
 	}
 
 // --------------------------------------------------------------------------------------------------------------------------
@@ -227,8 +356,8 @@ class Osmosmerka
 		}
 	}
 // --------------------------------------------------------------------------------------------------------------------------
-	/*
-	public function da_li_rec_ima_donju_crtu_striktno($rec = '')
+
+	public function da_li_rec_ima_bar_jednu_donju_crtu($rec = '')
 	{
 		// brojac koliko donjih crta (_) ima u stringu $rec
 		$this->brojac_donjih_crta = 0;
@@ -239,61 +368,59 @@ class Osmosmerka
 			{
 				if($rec[$i] == "_"){
 					// echo "karakter je _";
-					$this->brojac_donjih_crta++; 	
+					$this->brojac_donjih_crta++; 
+					return true;	
 				} 
 			}
 		}
-
-		if($this->brojac_donjih_crta <= $this->min_donjih_crta){
-			//nijedan bajt nije jednak "_" i ne postoje 4+ vezana suglasnika
-			return FALSE;
-		} else {
-			return TRUE;
-		}	
 	}
-	*/
+
 // --------------------------------------------------------------------------------------------------------------------------
+// ovaj funkcija je prouzrokovala da se krace osmosmerke popunjavaju "istosmerno" ili su unete reci samo horizontalno ili samo vertikalno u zavisnosti koji su putevi na pocetku
 	public function da_li_rec_ima_donju_crtu($rec = '')
 	{
 		// brojac koliko donjih crta (_) ima u stringu $rec
 
 		$this->brojac_donjih_crta = 0;
-
-		$brojac_suglasnika = 0; // resetuj ga na nula
+		// $brojac_suglasnika = 0; // resetuj ga na nula
 
 		if($rec)
 		{
 			for($i = 0; $i < strlen($rec); $i++)
 			{
 				// echo "<br>" . $i . ". ciklus -";
-			
 				if($rec[$i] == "_")
-				{
-					// echo "karakter je _";
+				{					
 					$this->brojac_donjih_crta++; 
-					$brojac_suglasnika = 0;
-				} elseif (isset($rec[$i + 1]))
-				{
-					$spojeni = $rec[$i].$rec[$i + 1];
-					if(in_array($spojeni, $GLOBALS['suglasnici'])) 
-					{ 
+					// $brojac_suglasnika = 0;
+				// } elseif (isset($rec[$i + 1]))
+				// {
+					// $spojeni = $rec[$i].$rec[$i + 1];
+					// if(in_array($spojeni, $GLOBALS['suglasnici'])) 
+					// { 
 						// echo "SLOVO JE SUGLASNIK";
 						// brojac_suglasnika - ideja je da ako su u stringu 4 suglasnika povezana bez _ , visoka je sansa da taj upit nece pronaci takvu rec 
 						// ili je sansa izuzetno retka, takve reci u bazi ce imati 0 brojac uspesnih unosa ako uopste postoje
-						$brojac_suglasnika++;
+						// $brojac_suglasnika++;
 
-						if ($brojac_suglasnika > 3) 
-						{
+						// if ($brojac_suglasnika > 3) 
+						// {
 							// echo "rec ima vise od 3 suglasnika povezana u stringu";
-							return FALSE; // rec ima vise od 3 suglasnika povezana u stringu, nije bitno na kom mestu jer takva rec je izuzetno retka
-						}
-					} /*elseif(in_array($spojeni, $GLOBALS['samoglasnici'])) {
+							// return FALSE; // rec ima vise od 3 suglasnika povezana u stringu, nije bitno na kom mestu jer takva rec je izuzetno retka
+						// }
+					// } elseif(in_array($spojeni, $GLOBALS['samoglasnici'])) {
 						// echo "SLOVO JE SAmOGLASNIK";
-					} else {
+					// } else {
 						// echo "1/2 od dva slova; 1/2 jednog slova+donja crta; ";
-					}*/
+					// }
 				} 
 			}
+		}
+
+		// ako nijedno slovo u posmatranom stringu ne predstavlja prazno polje "_"
+		if($this->brojac_donjih_crta == 0)
+		{
+			return false;
 		}
  		
 		// Drugi nivo odlucivanja da li da se salje upit ili ne, na osnovu broja _ u stringu i njegove duzine
@@ -303,16 +430,18 @@ class Osmosmerka
 		/*
 		
 						duzina stringa   		maksimum brojac_donjih_crta za odredjenu duzinu
-						12						8			
-						11						7
-						10						7
-						9						6
+						12						9			
+						11						9
+						10						8
+						9						7
 						8						6
-						7						5
+						7						6
 						6						5
 						5						4
-						4						3  ovde je vec otvoren problem, recimo da krenem sa pretpostavkom da mora biti barem ovoliko xd
+						4						4  ovde je vec otvoren problem, recimo da krenem sa pretpostavkom da mora biti barem ovoliko xd
 						3						3  ocito ovde mora biti 3 kako bi se mogle napraviti sve 3*k i r*3 osm
+
+		$this->duzina_puta_sa_brojem_crta !!!!!!
 
 		znaci da string od 5 karaktera: "_ _ _ _r" predstavlja dozvoljen upit, isto kao i "_ _ _ar" itd.
 		kod treba da bude : 
@@ -322,6 +451,16 @@ class Osmosmerka
 				return true
 		*/
 
+		$duzina_trenutnog_puta = count($this->put_za_pretragu);
+
+		if ( $this->brojac_donjih_crta >= $this->duzina_puta_sa_brojem_crta[$duzina_trenutnog_puta] )	
+		{
+			return true;
+		} else {
+			return false;
+		}
+
+		/*
 		if($this->brojac_donjih_crta <= $this->min_donjih_crta)
 		{
 			//nijedan bajt nije jednak "_" i ne postoje 4+ vezana suglasnika
@@ -329,7 +468,7 @@ class Osmosmerka
 		} else {
 			return TRUE;
 		}	
-		
+		*/
 	}
 // --------------------------------------------------------------------------------------------------------------------------
 
@@ -350,6 +489,12 @@ class Osmosmerka
 // --------------------------------------------------------------------------------------------------------------------------
 	public function ispisi_sve_unete_reci(){
 		return $GLOBALS['unete_reci'];
+	}
+	public function ispisi_sve_unete_reci_sa_putevima(){
+		return $GLOBALS['unete_reci_sa_putevima'];
+	}
+	public function vrati_sve_unete_reci_sa_putevima(){
+		return $GLOBALS['unete_reci_sa_putevima'];
 	}
 // --------------------------------------------------------------------------------------------------------------------------
 	// vraca false ako nije potpuno popunjena slovima
@@ -383,10 +528,18 @@ class Osmosmerka
 				}
 			}
 		}
-		$this->put_za_pretragu = $niz_preostalih_polja;
-		$br_preostalih_polja = count($niz_preostalih_polja);
 
-		if ($br_preostalih_polja >= 3 AND $br_preostalih_polja <= 12){
+		if($this->tip_osmosmerke === 'asimetricna')
+	    {
+	    	// var_dump("DOSLO JE DO RESENJA");
+	    	$niz_preostalih_polja = asm_uklanjanje_polja_iz_preostalih_polja($niz_preostalih_polja, $this->asim_polja);
+	    }
+	    // var_dump($niz_preostalih_polja);
+		$this->put_za_pretragu = $niz_preostalih_polja;
+		$this->polja_resenja = $niz_preostalih_polja; // naknadno dodato za json
+		$this->broj_preostalih_polja = count($niz_preostalih_polja);
+
+		if ($this->broj_preostalih_polja >= 3 AND $this->broj_preostalih_polja <= 12){
 			// popunjavanje preostalih polja osmosmerke iz baze
 
 			// vise ne sme da vrati samo jednu rec, vec mi treba vise, ovaj broj nije bitan dok god se radi sa oko 40*40,
@@ -397,7 +550,7 @@ class Osmosmerka
 			$this->koliko = 50;
 			$this->rec_za_pretragu = "";
 			$d_crta = "_";
-			for($i = 1; $i <= $br_preostalih_polja; $i++){
+			for($i = 1; $i <= $this->broj_preostalih_polja; $i++){
 				$this->rec_za_pretragu .= $d_crta;
 			}
 
@@ -409,11 +562,13 @@ class Osmosmerka
 					// var_dump($this->niz_pretrage[$rec]["rec"]);
 					$this->razbijanje_reci_na_slova($this->niz_pretrage[$rec]);
 					$this->unos_reci_u_osmosmerku();
-					echo "Resenje osmosmerke je {$this->rec_za_unos_u_osmosmerku} - echo kraj osm klase";
+					$this->broj_preostalih_polja = 0;
+					// $this->rec_za_unos_u_osmosmerku;
 					break;
 				}
 			}
 			$this->resenje = $this->rec_za_unos_u_osmosmerku;
+			// var_dump($this->resenje);
 		} else {
 			// preostalo je premalo ili previse praznih polja, jedan nacin da se to ispravi je da se u tabelu unesu reci duze od 12 slova ili u zasebnu tabelu 
 			// $this->zatvor_klaster();
@@ -443,30 +598,44 @@ class Osmosmerka
 	public function ispisivanje_reci_osm()
 	{
 		$this->string_svih_reci = '';
-		echo "<br>";
+		// echo "<br>";
 		for($i = 0; $i < count($GLOBALS['unete_reci']); $i++)
 		{
-			print_r($GLOBALS['unete_reci'][$i]['rec']);
-			echo ", ";
+			// print_r($GLOBALS['unete_reci'][$i]['rec']);
+			// echo ", ";
 			$this->string_svih_reci .= $GLOBALS['unete_reci'][$i]['rec'].'/'; // kasnije..................
+
 		}
-		echo "<br>";
+		// echo "<br>";
 		// print_r($GLOBALS['unete_reci']);
 	}
 // --------------------------------------------------------------------------------------------------------------------------
 	public function unos_osmosmerke_u_bazu()
 	{
-		$osm = array(
-				'id_korisnika' => $this->id_korisnika,
-				'reci_osmosmerke' => $this->string_svih_reci,
-				'niz_osmosmerke' => $this->osm_string, 
-				'unet_red' => $this->red_velicina_osmosmerke,
-				'unet_kolona' => $this->kolona_velicina_osmosmerke,
-				'resenje_osmosmerke' => $this->resenje
-						);
-		if(!$this->bp_instanca->unesi('resene_osmosmerke', $osm))
+		$dozvola_skaldistenja_osm = false;
+		if($this->broj_preostalih_polja == 0 AND $this->_bp_tabela_osmosmerki == 'ogromne_osmosmerke')
 		{
-			throw new Exception('Догодио се проблем приликом уноса осмосмерке у базу.');
+			$dozvola_skaldistenja_osm = true;
+		} 
+		if($this->_bp_tabela_osmosmerki == 'standardna')
+		{
+			$dozvola_skaldistenja_osm = true;
+		} 
+
+		if($dozvola_skaldistenja_osm)
+		{
+			$osm = array(
+					'reci_osmosmerke' => $this->string_svih_reci,
+					'niz_osmosmerke' => $this->osm_string, 
+					'unet_red' => $this->red_velicina_osmosmerke,
+					'unet_kolona' => $this->kolona_velicina_osmosmerke,
+					'resenje_osmosmerke' => $this->resenje,
+					'datum_pravljenja' => date('Y-m-d H:i:s')
+							);
+			if(!$this->bp_instanca->unesi($this->_bp_tabela_osmosmerki, $osm)) //  napravljene_osmosmerke
+			{
+				throw new Exception('Догодио се проблем приликом уноса осмосмерке у базу.');
+			}
 		}
 	}
 // --------------------------------------------------------------------------------------------------------------------------

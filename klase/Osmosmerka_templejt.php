@@ -11,24 +11,66 @@ class Osmosmerka_templejt
 {
 	public $red_velicina_osmosmerke,
 		   $kolona_velicina_osmosmerke,
-		   $niz_svih_puteva = array(),
-		   $osmosmerka_niz = array(),
 		   $max_duzina_reci;
 	// Nek je najduza rec duzine 12 karaktera, za sad
 
 // ----------------------------------------------------------------------------------------------------------------------------------
-	public function __construct($red_velicina_osmosmerke, $kolona_velicina_osmosmerke, $niz_svih_puteva, $osmosmerka_niz, $max_duzina_reci)
+	public function __construct($red_velicina_osmosmerke, $kolona_velicina_osmosmerke, $max_duzina_reci, $preuzima_puteve_iz_fajla, $asim_polja = null)
 	{
 	    $this->red_velicina_osmosmerke = $red_velicina_osmosmerke;
 	    $this->kolona_velicina_osmosmerke = $kolona_velicina_osmosmerke;
-	    $this->osmosmerka_niz = $osmosmerka_niz;
-	    $this->niz_svih_puteva = $niz_svih_puteva;
+	    $this->osmosmerka_niz = array();
+	    $this->niz_svih_puteva = array();
 	    $this->max_duzina_reci = $max_duzina_reci; //12
+
+	    $this->asim_polja = $asim_polja;
+	    // var_dump($this->asim_polja);
+	    if($this->asim_polja)
+	    {
+	    	$this->is_asm = true;
+	    	$this->br_asm_polja = count($this->asim_polja);
+	    	$this->is_normal = false;
+	    } else {
+	    	$this->is_asm = false;
+	    	$this->is_normal = true;
+	    }
+
+	    if($preuzima_puteve_iz_fajla)
+	    {
+	    	$this->preuzima_puteve_iz_fajla = $preuzima_puteve_iz_fajla; 
+	    } else {
+	    	$this->preuzima_puteve_iz_fajla = FALSE;
+	    }
 	}
 // ----------------------------------------------------------------------------------------------------------------------------------
 	public function vrati_red()	{	return $this->red_velicina_osmosmerke;	}
 // ----------------------------------------------------------------------------------------------------------------------------------
 	public function vrati_kolona() {	return $this->kolona_velicina_osmosmerke;	}
+// ----------------------------------------------------------------------------------------------------------------------------------
+	// nps - niz_svih_puteva
+	// u fajlovima, podatak se naziva: niz_svih_puteva_za_fajl
+	public function preuzmi_podatak_nsp_iz_fajla()
+	{
+		if( $this->preuzima_puteve_iz_fajla )
+		{
+			$naziv_fajla = $this->red_velicina_osmosmerke . "x" . $this->kolona_velicina_osmosmerke . ".php";
+			if( file_exists('templejti_osmosmerke/' . $naziv_fajla) )
+			{
+				require_once 'templejti_osmosmerke/' . $naziv_fajla;
+				$this->niz_svih_puteva = $niz_svih_puteva_za_fajl;
+
+				$br_puteva_klasa = new Testiranje_formule_broja_puteva_u_osm($this->red_velicina_osmosmerke, $this->kolona_velicina_osmosmerke);
+				$br_puteva_rez_k = $br_puteva_klasa->izracunaj_broj_puteva();
+				$this->broj_puteva = $br_puteva_rez_k;
+
+				return $this->prioritet_duzine_puta($this->niz_svih_puteva);
+			}
+		} else {
+			// znaci da ce praviti novi put ako je u konstruktoru FALSE, ovako radi kod za sad jer moram da proverim prvo da li biblioteka ubrzava rad koda
+			// jer ako ne, onda imam 40GB useless fajlova
+			return $this->svi_putevi();
+		}
+	}
 // ----------------------------------------------------------------------------------------------------------------------------------
 	public function formiranje_prazne_osmosmerke()
 	{
@@ -74,9 +116,25 @@ class Osmosmerka_templejt
 						{
 							$polje = array ($r, $k_polje);
 							array_push($put, $polje); 
+							if($this->is_asm)
+							{
+								// proveri da li je to polje jedno od deaktiviranih
+								$save_or_skip = $this->da_li_je_polje_jedno_od_deaktiviranih($polje);
+								if($save_or_skip){
+									break;
+								}
+							}
 						} 
 						// array_push($put, "DESNO");
-						array_push($this->niz_svih_puteva, $put);
+						if($this->is_asm AND $save_or_skip === FALSE)
+						{
+							// polje nije jedno od deaktiviranih, unesi ga
+							array_push($this->niz_svih_puteva, $put);
+							
+						}
+						if($this->is_normal){	
+							array_push($this->niz_svih_puteva, $put);
+						}
 						// "brisanje" sadrzaja niza put;     jer array_push samo unosi drugi argument na kraj niza i time bi mi unosio sve prethodno unete vrednosti puteva i polja u niz_svih_puteva. 
 						$put = array ();
 					}
@@ -88,9 +146,25 @@ class Osmosmerka_templejt
 						{
 							$polje = array ($r_polje, $k);
 							array_push($put, $polje); 
+							if($this->is_asm)
+							{
+								// proveri da li je to polje jedno od deaktiviranih
+								$save_or_skip = $this->da_li_je_polje_jedno_od_deaktiviranih($polje);
+								if($save_or_skip){
+									break;
+								}
+							}
+						} 
+						// array_push($put, "DESNO");
+						if($this->is_asm AND $save_or_skip === FALSE)
+						{
+							// polje nije jedno od deaktiviranih, unesi ga
+							array_push($this->niz_svih_puteva, $put);
+							
 						}
-						// array_push($put, "DOLE");
-						array_push($this->niz_svih_puteva, $put);
+						if($this->is_normal){	
+							array_push($this->niz_svih_puteva, $put);
+						}
 						$put = array (); 
 					}
 
@@ -101,9 +175,25 @@ class Osmosmerka_templejt
 						{
 							$polje = array ($r, $k_polje);
 							array_push($put, $polje); 
+							if($this->is_asm)
+							{
+								// proveri da li je to polje jedno od deaktiviranih
+								$save_or_skip = $this->da_li_je_polje_jedno_od_deaktiviranih($polje);
+								if($save_or_skip){
+									break;
+								}
+							}
 						} 
-						// array_push($put, "LEVO");
-						array_push($this->niz_svih_puteva, $put);
+						// array_push($put, "DESNO");
+						if($this->is_asm AND $save_or_skip === FALSE)
+						{
+							// polje nije jedno od deaktiviranih, unesi ga
+							array_push($this->niz_svih_puteva, $put);
+							
+						}
+						if($this->is_normal){	
+							array_push($this->niz_svih_puteva, $put);
+						}
 						$put = array ();
 					}
 
@@ -114,9 +204,25 @@ class Osmosmerka_templejt
 						{
 							$polje = array ($r_polje, $k);
 							array_push($put, $polje); 
+							if($this->is_asm)
+							{
+								// proveri da li je to polje jedno od deaktiviranih
+								$save_or_skip = $this->da_li_je_polje_jedno_od_deaktiviranih($polje);
+								if($save_or_skip){
+									break;
+								}
+							}
 						} 
-						// array_push($put, "GORE");
-						array_push($this->niz_svih_puteva, $put);
+						// array_push($put, "DESNO");
+						if($this->is_asm AND $save_or_skip === FALSE)
+						{
+							// polje nije jedno od deaktiviranih, unesi ga
+							array_push($this->niz_svih_puteva, $put);
+							
+						}
+						if($this->is_normal){	
+							array_push($this->niz_svih_puteva, $put);
+						}
 						$put = array ();
 					}
 
@@ -129,9 +235,25 @@ class Osmosmerka_templejt
 						{
 							$polje = array ($r_polje, $k_polje);
 							array_push($put, $polje); 
+							if($this->is_asm)
+							{
+								// proveri da li je to polje jedno od deaktiviranih
+								$save_or_skip = $this->da_li_je_polje_jedno_od_deaktiviranih($polje);
+								if($save_or_skip){
+									break;
+								}
+							}
 						} 
-						// array_push($put, "GORE_DESNO");
-						array_push($this->niz_svih_puteva, $put);
+						// array_push($put, "DESNO");
+						if($this->is_asm AND $save_or_skip === FALSE)
+						{
+							// polje nije jedno od deaktiviranih, unesi ga
+							array_push($this->niz_svih_puteva, $put);
+							
+						}
+						if($this->is_normal){	
+							array_push($this->niz_svih_puteva, $put);
+						}
 						$put = array ();
 					}
 
@@ -142,9 +264,25 @@ class Osmosmerka_templejt
 						{
 							$polje = array ($r_polje, $k_polje);
 							array_push($put, $polje); 
+							if($this->is_asm)
+							{
+								// proveri da li je to polje jedno od deaktiviranih
+								$save_or_skip = $this->da_li_je_polje_jedno_od_deaktiviranih($polje);
+								if($save_or_skip){
+									break;
+								}
+							}
 						} 
-						// array_push($put, "GORE_LEVO");
-						array_push($this->niz_svih_puteva, $put);
+						// array_push($put, "DESNO");
+						if($this->is_asm AND $save_or_skip === FALSE)
+						{
+							// polje nije jedno od deaktiviranih, unesi ga
+							array_push($this->niz_svih_puteva, $put);
+							
+						}
+						if($this->is_normal){	
+							array_push($this->niz_svih_puteva, $put);
+						}
 						$put = array ();
 					}
 
@@ -155,9 +293,25 @@ class Osmosmerka_templejt
 						{
 							$polje = array ($r_polje, $k_polje);
 							array_push($put, $polje); 
+							if($this->is_asm)
+							{
+								// proveri da li je to polje jedno od deaktiviranih
+								$save_or_skip = $this->da_li_je_polje_jedno_od_deaktiviranih($polje);
+								if($save_or_skip){
+									break;
+								}
+							}
 						} 
-						// array_push($put, "DOLE_LEVO");
-						array_push($this->niz_svih_puteva, $put);
+						// array_push($put, "DESNO");
+						if($this->is_asm AND $save_or_skip === FALSE)
+						{
+							// polje nije jedno od deaktiviranih, unesi ga
+							array_push($this->niz_svih_puteva, $put);
+							
+						}
+						if($this->is_normal){	
+							array_push($this->niz_svih_puteva, $put);
+						}
 						$put = array ();	
 					}
 
@@ -168,9 +322,25 @@ class Osmosmerka_templejt
 						{
 							$polje = array ($r_polje, $k_polje);
 							array_push($put, $polje); 
+							if($this->is_asm)
+							{
+								// proveri da li je to polje jedno od deaktiviranih
+								$save_or_skip = $this->da_li_je_polje_jedno_od_deaktiviranih($polje);
+								if($save_or_skip){
+									break;
+								}
+							}
 						} 
-						// array_push($put, "DOLE_DESNO");
-						array_push($this->niz_svih_puteva, $put);
+						// array_push($put, "DESNO");
+						if($this->is_asm AND $save_or_skip === FALSE)
+						{
+							// polje nije jedno od deaktiviranih, unesi ga
+							array_push($this->niz_svih_puteva, $put);
+							
+						}
+						if($this->is_normal){	
+							array_push($this->niz_svih_puteva, $put);
+						}
 						$put = array ();
 					}
 				}
@@ -185,6 +355,7 @@ class Osmosmerka_templejt
 
 	    $this->niz_svih_puteva_sortiran_prior = $this->prioritet_duzine_puta($this->niz_svih_puteva);
 
+	    // echo "<br>" . "ukupan broj puteva je: " . count( $this->niz_svih_puteva_sortiran_prior ) . "<br>";
 	    // echo "<br>" . "Niz svih puteva : " . "<br>";
 	    // prikaz_duzina_puta($this->niz_svih_puteva);
 
@@ -198,24 +369,29 @@ class Osmosmerka_templejt
 	    // return $this->niz_svih_puteva;
   	}
 // ----------------------------------------------------------------------------------------------------------------------
+  	private function da_li_je_polje_jedno_od_deaktiviranih($polje)
+  	{
+  		for($i = 0; $i < $this->br_asm_polja; $i++ )
+  		{
+  			if($polje === $this->asim_polja[$i])
+  			{
+  				// var_dump($polje);
+  				// var_dump($this->asim_polja[$i]);
+  				// echo "pronadjeno je asm polje, <br>";
+  				return true;
+  			}
+  		}
+  		return false;
+  	}
+// ----------------------------------------------------------------------------------------------------------------------
   	public function broj_preostalih_polja()
   	{
   		return $this->red_velicina_osmosmerke * $this->kolona_velicina_osmosmerke;
   	}
 
 // ----------------------------------------------------------------------------------------------------------------------
-  	// funkcija sortira niz_svih_puteva tako da je sansa da su najduzi putevi na pocetku niza visoka, a mala na kraju niza
-  	public function prioritet_duzine_puta($niz_svih_puteva_primljen)
+  	public function razdeli_puteve_po_duzini($niz_svih_puteva_primljen)
   	{
-  		// $this->niz_sortiran_prioritetom = array();
-  		$this->max_duzina_reci_trim = $this->najduza_moguca_rec();
-  		$this->niz_svih_puteva_sortiran_prior = array();
-
-  		
-
-  		// nadji random broj na osnovu kog se meri sansa da se unese niz te duzine u rez
-  		$this->zig_zag_random($this->max_duzina_reci_trim);
-
   		// u tim praznim nizovima ce biti svi putevi istih duzina, putevi duzine 3 u nizu sa kljucem 3; 4 sa 4 i tako dalje
   		$this->niz_svih_puteva_sortiran_po_velicini = array( 3=>array(),4=>array(),5=>array(),
   											                 6=>array(),7=>array(),8=>array(),
@@ -275,8 +451,32 @@ class Osmosmerka_templejt
   		// posto sam instancirao prazne nizove, hocu da ih uklonim kako ne bi bilo nepotrebnih problema
   		$this->niz_svih_puteva_sortiran_po_velicini =  $this->uklanjanje_praznog_niza_iz__niz_svih_puteva_sortiran_po_velicini();
 
-  		// jedan loop mora uneti put na kraj niza $this->niz_svih_puteva_sortiran_prior
+  		return $this->niz_svih_puteva_sortiran_po_velicini;
+  	}
 
+
+// ----------------------------------------------------------------------------------------------------------------------
+  	// funkcija sortira niz_svih_puteva tako da je sansa da su najduzi putevi na pocetku niza visoka, a mala na kraju niza
+  	public function prioritet_duzine_puta($niz_svih_puteva_primljen)
+  	{
+  		// $this->niz_sortiran_prioritetom = array();
+  		$this->max_duzina_reci_trim = $this->najduza_moguca_rec();
+  		$this->niz_svih_puteva_sortiran_prior = array();
+
+  		if($this->preuzima_puteve_iz_fajla == FALSE)
+  		{
+  			$this->razdeli_puteve_po_duzini($niz_svih_puteva_primljen);
+  		} else {
+  			$this->niz_svih_puteva_sortiran_po_velicini = $niz_svih_puteva_primljen;
+  		}
+  		
+  		// nadji random broj na osnovu kog se meri sansa da se unese niz te duzine u rez
+  		$this->zig_zag_random($this->max_duzina_reci_trim);
+  		
+  		// ranije koriscen podatak za pravljenje biblioteke, kada i ako se budu ponovo pravili fajlovi templejta, ova linija se mora uncomment!!!!!!
+  		// $this->niz_svih_puteva_za_fajl = $this->niz_svih_puteva_sortiran_po_velicini;
+
+  		// jedan loop mora uneti put na kraj niza $this->niz_svih_puteva_sortiran_prior
   		for($putevi_br = 0; $putevi_br < $this->broj_puteva; $putevi_br++)
   		{
   			// loop za unos dok god se ne unese jedan put
@@ -339,7 +539,7 @@ class Osmosmerka_templejt
   		$pocetna_sansa = 80;
   		$broj_razlicitih_duzina = $this->max_duzina_reci_trim - 2;
   		$this->zig_zag_random = array($this->max_duzina_reci_trim => min($pocetna_sansa + $this->max_duzina_reci_trim, 95)); //
-
+  		
   		// u jednom ciklusu unosim sanse nizova prvog i poslednjeg; prvi+1 i poslednji-1 ...
 
   		$gore = 3;
@@ -368,6 +568,8 @@ class Osmosmerka_templejt
   			$broj_razlicitih_duzina--;
 
   		} while ($broj_razlicitih_duzina > 1);
+  		
+
   	}
 // ----------------------------------------------------------------------------------------------------------------------
   	public function poslednji_element_niza($zig_zag_random)
@@ -376,6 +578,10 @@ class Osmosmerka_templejt
 		$key = key($zig_zag_random);
 		return $key;
   	}
-
+// ----------------------------------------------------------------------------------------------------------------------
+  	public function niz_svih_puteva_za_fajl()
+  	{
+  		return $this->niz_svih_puteva_za_fajl;
+  	}
 }
 

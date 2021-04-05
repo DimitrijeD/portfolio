@@ -3,15 +3,18 @@
 /*
 Sve sto funkcija radi jeste, primi latinicni string i konvertuje ga u cirilicni tako da karakter koji ne preponza, prepise u cirilicni string.
 
-Nepotrebno sam koristio swithc umesto da sam napravio asoc niz gde su kljucevi latinicna slova a vrednosti cirilicna slova...
+Nepotrebno sam koristio swithc umesto da sam napravio asoc niz gde su kljucevi latinicna slova a vrednosti cirilicna slova... napravljeno ispod u komentaru
 
+return type string
+svaka rec je odvojena "/" 
+primer:
+	Нека/ћирилична/реченица/конвертована/из/латинице
+
+ne menjaju se velika i mala slova
+ako je tacka na kraju, ostavice delimiter "/"" a nece staviti tacku iz nekog razloga, mrzi me da debag
 */
 
 function lat_u_cir($string){
-	$lat_slova = array("a", "b", "c", "č", "ć", "d", "dž", "đ", "e", "f", "g", "h", "i", "j", "k", "l", "lj", "m", "n", "nj", "o", "p", "r", "s", "š", "t", "u", "v", "z", "ž");
-
-	$cir_slova = array("а", "б", "в", "г", "д", "ђ", "е", "ж", "з", "и", "ј", "к", "л", "љ", "м","н", "њ", "о", "п", "р", "с", "т", "ћ", "у", "ф", "х", "ц", "ч", "џ", "ш");
-
 	$duzina_stringa = strlen($string);
 	$kon_string = '';
 
@@ -314,3 +317,12 @@ function lat_u_cir($string){
 // print_r(lat_u_cir("đš po povđć09raćtra"));
 // var_dump( mb_strlen("АС П") );
 
+// $string_c = "Нека реченица која служи као тест.";
+
+// $string_l = "Neka rečenica koja služi kao test.";
+
+// var_dump(lat_u_cir($string_l));
+
+// var_dump( explode ( "/", lat_u_cir($string_l) ) );
+
+?>

@@ -1,43 +1,70 @@
+<?php
+require_once 'osnova/inicijalizacija.php';
+$korisnik = new Korisnik();
+
+if (!$korisnik->je_ulogovan_k()) 
+{
+	Preusmeri::na('registracija.php');
+}
+if( !($korisnik->ima_prava('admin')) ){
+	Preusmeri::na('pocetna_stranica.php');
+} 
+?>
 <!DOCTYPE html>
 <html>
 <head>
 	<link rel="stylesheet" href="./css/stil.css">
+	<title>Админ-root</title>
 </head>
-<body>
-	<div class="container">
-		<ul>
+<body> 
+	<div class="container"> 
+		<ul id="stranice"> 
 			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
+			<li><a href="igraOsmosmerka.php"> Осмосмерка</a></li>
+			<li><a href="kvadratna_spl.php"> Интерполација</a></li>
+			<li><a href="asimetricna_osmosmerka.php">Асиметрична осмосмерка</a></li>
+			<div class="dropdown">
+				<div class="dropbtn">Korisnik</div>
+					<div class="dropdown-content">
+						<?php	
+						if ($korisnik->je_ulogovan_k())
+						{	?>		
+						<a href="profil.php?korisnik=<?php echo $korisnik->podaci_k()->id; ?>"> Профил </a> 
+						<?php } ?>	
+						<a href="azuriranje.php"> Промени име </a>
+						<a href="promeni_sifru.php"> Промени шифру </a>
+					</div>
+			</div>
 
-			<li><a href="igraOsmosmerka.php">Игра осмосмерка</a></li>
-			<li><a href="odjava.php">Одјава</a></li>
-		</ul><br>
-		<p1>Алати за одржавање валидности карактера у речима од којих се формирају осмосмерке</p1>
-		<ul>
-			<li><a href="tabela_svih_reci_za_osmosmerke.php">Приказ свих речи од којих се праве осмосмерке</a></li> 
-			<li><a href="brisanje_reci_sa_neparnim_brojem_karaktera.php"> Брисање свих речи са непарним бројем карактера </a></li>
-			<li><a href="brisanje_reci_sa_latinicnim_karakterom.php"> Брисање свих речи са латиничним карактером </a></li>
-		</ul>
-		<p1>Други алати</p1>
-		<ul>
-			<li><a href="skripte_za_testiranje/testiranje_rada_klase_osmosmerka_templejt.php"> Алат за тестирање рада класе Osmosmerka_tempejt </a></li>
-			<li><a href="glomazni_unos_reci.php"> Алат за масовни/гломазни/bulk унос речи у табелу за попуњавање осмосмерки </a></li>
-			<li><a href="kvadratna_spl.php"> Интерполација квадратурном формулом </a></li>
-			
-		</ul>	
+			<?php			
 
-		<!-- 
-		You can use pattern attribute of HTML5 to allow only letters in a text field, like this:
-		<input type="text" name="fieldname1" pattern="[a-zA-Z]{1,}" required>      .......kasnije
-		 svih ostalih karaktera. Kad naiđe na njih, treba da prepozna da je tu kraj te reči i da je stavi u niz koji predstavlja skupljene reči iz ovog stringa.
-		 -->
-
-		<?php
-		require_once 'osnova/inicijalizacija.php';
-		$korisnik = new Korisnik();
+			if( ($korisnik->ima_prava('admin')) ) // ako je korisnik admin, prikazi mu ostale linkove
+			{
+			?>	
 		
-		if( !($korisnik->ima_prava('admin')) ){
-			Preusmeri::na('pocetna_stranica.php');
-		} 
+			<div class="dropdown">
+				<div class="dropbtn">Алати за базу</div>
+					<div class="dropdown-content">
+						<a href="admin_stranica.php">Админ страница</a>
+						<a href="brisanje_reci_sa_neparnim_brojem_karaktera.php"> Брисање свих речи са непарним бројем карактера </a>
+						<a href="brisanje_reci_sa_latinicnim_karakterom.php"> Брисање свих речи са латиничним карактером </a>						
+						<a href="glomazni_unos_reci.php"> Алат за масовни/гломазни/bulk унос речи у табелу за попуњавање осмосмерки </a>
+						<a href="test_tabele_osmosmerke.php"> Тест валидности табела за речи (reci_osm_N) </a>
+					</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropbtn">Алати за осмосмерке</div>
+					<div class="dropdown-content">
+						<a href="to_do_list.php"> to_do_list </a>
+						<a href="testiranje_rada_klase_osmosmerka_templejt.php"> Алат за тестирање рада класе Osmosmerka_tempejt </a> 
+						<a href="pravljenje_ogromnih_osmosmerki.php"> Страница за прављење огромних осмосмерки </a> 
+					</div>
+			</div>
+			<?php } ?>
+			<li style="float: right; margin: 0; padding: 0px 5px"><a style="margin: 10px; padding: 5px 10px 5px 5px" href="odjava.php">Одјава</a></li>	
+		</ul>
+		<h2>Унос речи у табелe за осмосмерку ( reci_osmosmerke_(broj_slova_u_reci) )</h2>
+		<?php
 
 		if (Input::postoji())
 		{
@@ -60,32 +87,36 @@
 				$tabela = "reci_osmosmerke_"."{$broj_slova_u_reci}";
 
 				$bp_instanca->unesi($tabela, $_POST); 
-				echo "Успешна валидација, реч је унета у табелу - {$tabela}" . "<br>";
-				print_r(Input::vrati('rec'));
+				echo "<p>Успешна валидација, реч је унета у табелу: <strong>{$tabela}</strong><p>";
+				echo "<p>Унета реч je: <strong>" . Input::vrati('rec') . " </strong>.<br>";
 
 			} else {
-				foreach($rez_validacije->sve_greske() as $greska){
-					echo "$greska, '<br>";
+				echo '<div id="greske">';
+				foreach($rez_validacije->sve_greske() as $greska)
+				{
+					echo '<p>' . $greska, ' </p>';
 				}
+				echo '</div>';
 			}
-		}
-	// --------------------------------------- Unos reci u tabelu za osmosmerku -------------------------------------------
-		?>
+		}?>
 		
-		<h2> Унос речи у табелу за осмосмерку (reci_osmosmerke) </h2>
+		<h2> Форма </h2>
 		<form action="" method="post" > <!-- accept-charset="Windows-1251" -->
 			<div>
 				<label for="rec">Унесите ћириличну реч</label>
-				<input type="text" id="rec" name="rec" autocomplete="off" autofocus="autofocus" > <!-- pattern="[а-Za-z]{3,12}"  -->
+				<input type="text" id="rec" name="rec" autocomplete="off" autofocus="autofocus" >
 			</div>
 			<input type="submit" value="Унеси реч">
 		</form>
-
-		<!-- <h2>Направи корисника/администратора</h2> -->
+		
+		<div id="content-wrap">
+			<footer id="footer"><small>&copy; Copyright 2021.   Dimitrije Drakulić</small></footer>
+		</div>	
+		
 	</div>
-	<script>
-		if ( window.history.replaceState ) {
-  		window.history.replaceState( null, null, window.location.href );
+<script>
+	if ( window.history.replaceState ) {
+			window.history.replaceState( null, null, window.location.href );
 	}
 </script>
 </body>

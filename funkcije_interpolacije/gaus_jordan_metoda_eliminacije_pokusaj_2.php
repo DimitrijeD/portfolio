@@ -86,14 +86,14 @@ $matrica = array(
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-function gaus_jordan_metoda_eliminacije_pokusaj_2($cvorovi, $tacke_x) // $matrica, 
+function gaus_jordan_metoda_eliminacije_pokusaj_2($niz_cvorovi, $tacke_x) // $matrica, 
 {
 	// ------------------------------------- Priprema matrice -----------------------------------//
 
 	// FORMIRANJE MATRICE NA OSNOVU CVOROVA
-	$niz_cvorovi = niz_cvorovi($cvorovi);
-    $niz_tacke   = niz_tacke($tacke_x);
-    
+	// $niz_cvorovi = niz_cvorovi($cvorovi);
+    // $niz_tacke   = niz_tacke($tacke_x);
+    $niz_tacke   = $tacke_x;
     // sortirani cvorovi po x vrednosti u rastucem poretku radi formiranja intervala
     $niz_cvorovi = sortiranje_cvorova_po_intervalu($niz_cvorovi);
 
@@ -143,19 +143,22 @@ function gaus_jordan_metoda_eliminacije_pokusaj_2($cvorovi, $tacke_x) // $matric
 
 	// ------------------------------------Interpolacija----------------------------------------//
 	$niz_interpoliranih_tacaka = array();
-	for($x = 0; $x < count($niz_tacke); $x++)
+	if(!empty($niz_tacke))
 	{
-		// kriva
-		$kr = u_kom_intervalu_je_input($niz_intervali, $niz_tacke[$x]) + 1; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		for($x = 0; $x < count($niz_tacke); $x++)
+		{
+			// kriva
+			$kr = u_kom_intervalu_je_input($niz_intervali, $niz_tacke[$x]) + 1; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-		// Pn(x)	=			            x * x * An                         +           x * Bn                        +     Cn   
-		$vrednost_y = ( $niz_tacke[$x] * $niz_tacke[$x] * $abc_grupe[$kr][0] ) + ( $niz_tacke[$x] * $abc_grupe[$kr][1] ) +  $abc_grupe[$kr][2];
-		$niz_interpoliranih_tacaka[] = array($niz_tacke[$x], $vrednost_y);
+			// Pn(x)	=			            x * x * An                         +           x * Bn                        +     Cn   
+			$vrednost_y = ( $niz_tacke[$x] * $niz_tacke[$x] * $abc_grupe[$kr][0] ) + ( $niz_tacke[$x] * $abc_grupe[$kr][1] ) +  $abc_grupe[$kr][2];
+			$niz_interpoliranih_tacaka[] = array($niz_tacke[$x], $vrednost_y);
 
-		// $prvi = $niz_intervali[$u_kom_intervalu_je_input][0];
-		// $drugi = $niz_intervali[$u_kom_intervalu_je_input][1];
-		// $t = $niz_tacke[$x];
-		// echo "{$x}. tacka - {$t} - je u intervalu: {$prvi}, {$drugi}" . "<br>";
+			// $prvi = $niz_intervali[$u_kom_intervalu_je_input][0];
+			// $drugi = $niz_intervali[$u_kom_intervalu_je_input][1];
+			// $t = $niz_tacke[$x];
+			// echo "{$x}. tacka - {$t} - je u intervalu: {$prvi}, {$drugi}" . "<br>";
+		}
 	}
 
 	// -----------------------------------------------------------------------------------------//
@@ -320,7 +323,7 @@ function formiraj_string_formula_sa_intervalima($niz_koeficijenata_sa_vrednostim
 		$koef_b = $niz_koeficijenata_sa_vrednostima["b{$i}"];
 		$koef_c = $niz_koeficijenata_sa_vrednostima["c{$i}"];
 
-		$formule[$i] = "P(x1) = x * x * ( {$koef_a} ) 	+	 x *  ( {$koef_b} ) 	+  	( {$koef_c} )";
+		$formule[$i] = "P(x) = x * x * ( {$koef_a} ) 	+	 x *  ( {$koef_b} ) 	+  	( {$koef_c} )";
 	}
 	return $formule;
 }

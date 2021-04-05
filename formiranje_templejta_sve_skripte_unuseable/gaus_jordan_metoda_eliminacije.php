@@ -21,7 +21,7 @@ $matrica = array(
 
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
-
+/*
 function gaus_jordan_metoda_eliminacije($matrica)
 {
 
@@ -49,7 +49,7 @@ function gaus_jordan_metoda_eliminacije($matrica)
 
 
 }
-
+*/
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 // funkcija proverava da li su sve nule ispod i iznad glavne dijagonale za odredjen element dijagonale

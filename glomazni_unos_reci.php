@@ -1,37 +1,76 @@
+<?php
+require_once 'osnova/inicijalizacija.php';
+$korisnik = new Korisnik();
+
+if (!$korisnik->je_ulogovan_k()) 
+{
+	Preusmeri::na('registracija.php');
+}
+if( !($korisnik->ima_prava('admin')) ){
+	Preusmeri::na('pocetna_stranica.php');
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
 	<link rel="stylesheet" href="./css/stil.css">
+	<title>Унос речи из датотеке</title>
 </head>
 <body>
 	<div class="container">
-		<ul>
+		<ul id="stranice">
 			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
+			<li><a href="igraOsmosmerka.php"> Осмосмерка</a></li>
+			<li><a href="kvadratna_spl.php"> Интерполација</a></li>
+			<li><a href="asimetricna_osmosmerka.php">Асиметрична осмосмерка</a></li>
+			<div class="dropdown">
+				<div class="dropbtn">Korisnik</div>
+					<div class="dropdown-content">
+						<?php	
+						if ($korisnik->je_ulogovan_k())
+						{	?>		
+						<a href="profil.php?korisnik=<?php echo $korisnik->podaci_k()->id; ?>"> Профил </a> 
+						<?php } ?>	
+						<a href="azuriranje.php"> Промени име </a>
+						<a href="promeni_sifru.php"> Промени шифру </a>
+					</div>
+			</div>
 
-			<li><a href="igraOsmosmerka.php">Игра осмосмерка</a></li>
-			<li><a href="odjava.php">Одјава</a></li>
-		</ul><br>
-		<p1>Алати за одржавање валидности карактера у речима од којих се формирају осмосмерке</p1>
-		<ul>
-			<li><a href="tabela_svih_reci_za_osmosmerke.php">Приказ свих речи од којих се праве осмосмерке</a></li> 
-			<li><a href="brisanje_reci_sa_neparnim_brojem_karaktera.php"> Брисање свих речи са непарним бројем карактера </a></li>
-			<li><a href="brisanje_reci_sa_latinicnim_karakterom.php"> Брисање свих речи са латиничним карактером </a></li>
+			<?php			
+
+			if( ($korisnik->ima_prava('admin')) ) // ako je korisnik admin, prikazi mu ostale linkove
+			{
+			?>	
+		
+			<div class="dropdown">
+				<div class="dropbtn">Алати за базу</div>
+					<div class="dropdown-content">
+						<a href="admin_stranica.php">Админ страница</a>
+						<a href="brisanje_reci_sa_neparnim_brojem_karaktera.php"> Брисање свих речи са непарним бројем карактера </a>
+						<a href="brisanje_reci_sa_latinicnim_karakterom.php"> Брисање свих речи са латиничним карактером </a>						
+						<a href="glomazni_unos_reci.php"> Алат за масовни/гломазни/bulk унос речи у табелу за попуњавање осмосмерки </a>
+						<a href="test_tabele_osmosmerke.php"> Тест валидности табела за речи (reci_osm_N) </a>
+					</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropbtn">Алати за осмосмерке</div>
+					<div class="dropdown-content">
+						<a href="to_do_list.php"> to_do_list </a>
+						<a href="testiranje_rada_klase_osmosmerka_templejt.php"> Алат за тестирање рада класе Osmosmerka_tempejt </a>
+						<a href="pravljenje_ogromnih_osmosmerki.php"> Страница за прављење огромних осмосмерки </a> 
+					</div>
+			</div>
+			<?php } ?>
+			<li style="float: right; margin: 0; padding: 0px 5px"><a style="margin: 10px; padding: 5px 10px 5px 5px" href="odjava.php">Одјава</a></li>	
 		</ul>
-		<p1>Други алати</p1>
-		<ul>
-			<li><a href="skripte_za_testiranje/testiranje_rada_klase_osmosmerka_templejt.php"> Алат за тестирање рада класе Osmosmerka_tempejt </a></li>
-		</ul>
+
+		<h2> Унос речи из датотеке </h2>
 		<p>Упутство: У форму уписати назив '.txt' документа у ком се налази текст из ког ће се преузети само речи и унети у базу података. Документ се мора налазити у фајлу: "tekstovi_za_popunjavanje_baze_recima" и његов назив мора бити исправно уписан. Пазите које писмо користите приликом уписа назива документа у форму. Тренутно је дозвољен рад само са латиничним писмом, тј. текст у документу мора бити у латиници да би се успешно унелe речи у базу, док ће ћириличне речи прескочити.<p>
 		<p1>Напомена: користити ову страницу са опрезом. Прихватањем масовног усноса речи из текст документа може негативно утицати на квалитет направљених осмосмерки. Документ који унесете у форму мора бити на српском језику!</p1>
 
 		<?php
-		require_once 'osnova/inicijalizacija.php';
-		$korisnik = new Korisnik();
-		
-		if( !($korisnik->ima_prava('admin')) ){
-			Preusmeri::na('pocetna_stranica.php');
-		} 
-
+	
 		if (Input::postoji()  ) //file_exists(Input::vrati('dokument'))
 		{
 			$prvi_deo_puta = "tekstovi_za_popunjavanje_baze_recima/"; 
@@ -40,7 +79,6 @@
 			$extenzija = ".txt";
 			$put_dokumenta = $prvi_deo_puta.$ime_dokumenta.$extenzija;
 			
-
 			if(!file_exists($put_dokumenta) )
 			{
 				?> <br><p>Име документа које сте унели не постоји у фајлу 'tekstovi_za_popunjavanje_baze_recima'. Прочитајте поново упутство и пробајте опет.</p><br> <?php
@@ -53,25 +91,18 @@
 
 			if (empty($niz_svih_reci_dokumenta)) 
 			{
-				?> <br><p>Ниједна реч није припремљена за унос. Могући разлози могу бити:</p><br>
-					<p1>Документ није .txt формата.</p1>
-					<p1>Документ нема никакав текст у себи.</p1>
-					<p1>Документ има текст у себи али није сачуван.</p1>
-					<p1>Ниједна реч у том тексту није валидна што се може десити ако је текст лоше конвертован из неког другог формата (PDF). Proverite da li je tekst ispravan. </p1>
+				?>  <div id="greske">
+						<p>Ниједна реч није припремљена за унос. Могући разлози могу бити:</p><br>
+						<p>Документ није .txt формата.</p>
+						<p>Документ нема никакав текст у себи.</p>
+						<p>Документ има текст у себи али није сачуван.</p>
+						<p>Ниједна реч у том тексту није валидна што се може десити ако је текст лоше конвертован из неког другог формата (PDF). Proverite da li je tekst ispravan. </p>
+					</div>
 				<?php
 				exit();
 			}
 			
 			// print_r($niz_svih_reci_dokumenta);
-
-			$niz_kriterijum_validacija = array(
-					'rec' => array(
-						'obavezno' => TRUE,
-						'min' => 6,
-						'max' => 24, // jer su sva cirilicna slova 2 bajta
-						'jedinstven' => 'reci_osmosmerke'
-				)
-			);
 
 			$broj_unetih_reci = 0;
 			$unete_reci = array();
@@ -79,17 +110,36 @@
 
 			for($kljuc_reci = 0; $kljuc_reci < count($niz_svih_reci_dokumenta); $kljuc_reci++ )
 			{
+				// odlucivanje u koju tabelu posto za svaku duzinu reci od 3 do 12 postoji zasebna tabela
+				$duzina_reci = mb_strlen($niz_svih_reci_dokumenta[$kljuc_reci]['rec']);
+				$tabela_za_reci = 'reci_osmosmerke_' . $duzina_reci; 
+
+				$niz_kriterijum_validacija = array(
+					'rec' => array(
+						'obavezno' => TRUE,
+						'min' => 6,
+						'max' => 24, // jer su sva cirilicna slova 2 bajta
+						'jedinstven' => $tabela_za_reci
+					)
+				);
+
 				$validacija = new Validacija();
 				$rez_validacije = $validacija->provera_unosa($niz_svih_reci_dokumenta[$kljuc_reci], $niz_kriterijum_validacija);
 
-				if($rez_validacije->validacija_uspela())
+				if( $rez_validacije->validacija_uspela() )
 				{
 					$bp_instanca = Baza_podataka::vrati_instancu();
+					
 					// unos reci sa imenom dokumenta iz kog je ta rec uneta
 					$red_tabele = array('rec'=>$niz_svih_reci_dokumenta[$kljuc_reci]['rec'], 'tip_unosa'=>$ime_dokumenta);
-					$bp_instanca->unesi('reci_osmosmerke', $red_tabele);
-					$broj_unetih_reci++;
-					$unete_reci[] = $niz_svih_reci_dokumenta[$kljuc_reci]['rec'];
+					$bp_instanca->unesi($tabela_za_reci, $red_tabele);
+
+					//ako nije bilo gresaka u upitu
+					if (! $bp_instanca->greska_u_pretrazi() )
+					{
+						$broj_unetih_reci++;
+						$unete_reci[] = $niz_svih_reci_dokumenta[$kljuc_reci]['rec'];
+					}
 
 				} else 
 				{
@@ -101,26 +151,31 @@
 			{
 				echo "<br>". "Број успешно унетих речи је: {$broj_unetih_reci} " . "<br>";
 				echo "Унете речи су: " . "<br>";
-				foreach ($unete_reci as $key => $value) {
+				foreach ($unete_reci as $key => $value) 
+				{
 					echo $value . ", ";
 				}
 					
 			} else {
-				echo "Ниједна реч није унета у базу!" . "<br>"; 
-				echo "Разлози: " . "<br>";
-				foreach ($neuspele as $key => $value) {
-					print_r( $neuspele[$key] );
+				echo '<div id="greske">';
+				echo "<br>" . "<br>" . "<br>". "<p>Ниједна реч није унета у базу!" . "</p>"; 
+				foreach ($neuspele as $kljuc_niza_sve_za_rec => $niz_sve_za_rec) 
+				{
+					echo "<p>Реч: " . $neuspele[$kljuc_niza_sve_za_rec][0] . " , разлози:  </p>";
+					foreach ($neuspele[$kljuc_niza_sve_za_rec][1] as $kljuc_razloga => $razlog) 
+					{
+						echo "<p>" . $neuspele[$kljuc_niza_sve_za_rec][1][$kljuc_razloga] . "</p>";
+					}
+					echo "</div>";
 				}
-				
 			}
-			
 		}
 
 		// https://www.php.net/manual/en/function.file-exists.php 
-		// clearstatcache() - komentar
 		?>
 		
-		<h2> Масовни унос речи у табелу за осмосмерку (reci_osmosmerke) </h2>
+		<h2> Масовни унос речи у табелу за осмосмерку (reci_osmosmerke_N) </h2>
+		<h2> Не сећам се да ли сам теситрао ову скрипту, todo!</h2>
 		<form action="" method="post" >
 			<div>
 				<label for="dokument">Унесите име документа</label>
@@ -130,7 +185,11 @@
 
 			<input type="submit" value="Масовно уношење речи у базу података">
 		</form> 
-
+		
+		<div id="content-wrap">
+			<footer id="footer"><small>&copy; Copyright 2021.   Dimitrije Drakulić</small></footer>
+		</div>
+		
 	</div>
 
 	<script>

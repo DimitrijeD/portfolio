@@ -23,7 +23,7 @@ spl_autoload_register(function($klasa){
 	require_once 'klase/' . $klasa . '.php';
 });
 
-
+// PHP FUNKCIJE
 require_once 'funkcije/ocisti.php'; 
 require_once 'funkcije/sortiranje_niza.php';
 require_once 'funkcije/funkcija_donja_crta.php';
@@ -35,11 +35,19 @@ require_once 'funkcije/rec_ima_karakter_u_sebi.php';
 require_once 'funkcije/lat_u_cir.php';
 require_once 'funkcije/prikaz_duzina_puta.php';
 require_once 'funkcije/unos_reci_za_osmosmerke_iz_fajla.php';
+require_once 'funkcije/resenje_osmosmerke.php';
+require_once 'funkcije/napravi_spisak_reci_za_pronalazenje_u_osm.php';
+require_once 'funkcije/obradi_asim_polja.php';
+require_once 'funkcije/asm_uklanjanje_polja.php';
+require_once 'funkcije/da_li_je_sav_str_latinicni.php';
+require_once 'funkcije/da_li_je_sav_str_cirilicni.php';
+// otvori sve nizove pisama
+require_once 'nizovi_slova_pisama\nizovi_slova_pisama.php';
 
 // za numericku matematiku
-require_once 'testovi_soritanja_po_metodama_numericke_analize\gaus_jordan_metoda_eliminacije_pokusaj_2.php';
-require_once 'testovi_soritanja_po_metodama_numericke_analize\sortiranje_po_glavnoj_dijagonali.php';
-require_once 'testovi_soritanja_po_metodama_numericke_analize\formiranje_matrice.php';
+require_once 'funkcije_interpolacije\gaus_jordan_metoda_eliminacije_pokusaj_2.php';
+require_once 'funkcije_interpolacije\sortiranje_po_glavnoj_dijagonali.php';
+require_once 'funkcije_interpolacije\formiranje_matrice.php';
 
 //------------------------------------------------------------------------------------------------------------------------
 // var_dump(Kolacic::kolacic_postoji(Konfiguracija::vrati_konf('zapamti_me/ime_kolacica')));

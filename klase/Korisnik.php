@@ -27,6 +27,7 @@ class Korisnik
 				}
 			}
 		} else {
+
 			$this->nadji_k($korisnik);
 		}
 	}
@@ -113,7 +114,7 @@ class Korisnik
 	}
 //--------------------------------------------------------------------------------------------------------------------
 	public function ima_prava($kljuc)
-	{
+	{		
 		$tip_korisnika = $this->bp_instanca->pronadji('vrste_korisnika', array('id', '=', $this->podaci_k()->tip_korisnika));
 		if($tip_korisnika->br_redova())
 		{

@@ -1,5 +1,7 @@
 <?php
-
+/*
+ne secam se da sam ovo ikad pravio xd niti znam sta radi, veorovatno sam ovde pravio klasu pa je spojio sa Osmosmerka klasom, ko zna
+*/
 class Test_kvalitet
 {
 

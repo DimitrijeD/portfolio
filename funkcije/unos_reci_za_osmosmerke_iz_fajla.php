@@ -1,5 +1,16 @@
 <?php
 
+/*
+
+return type: array (
+	0=>array('rec'=>"ћирилична")
+	0=>array('rec'=>"реченица")
+)
+
+u ovom formatu je kako bi se pripremio unos svih reci u bazu jer su kolone tabla (3-12) pod nazivom "rec", ostale kolone tabele su default (brojaci, datum, itd.)
+
+*/
+
 function unos_reci_za_osmosmerke_iz_fajla($string)
 {
 	$string = mb_strtolower(lat_u_cir(trim($string)));
@@ -7,6 +18,8 @@ function unos_reci_za_osmosmerke_iz_fajla($string)
 	$niz_svih_reci = explode("/", $string);
 
 	$temp = array();
+
+	// niz svih reci koje 
 	$niz_svih_reci_rez = array();
 
 	// uklanjanje praznih elemenata niza
@@ -20,6 +33,8 @@ function unos_reci_za_osmosmerke_iz_fajla($string)
 		}
 	}
 
+	// var_dump($niz_svih_reci_rez);
+	// exit();
 	return $niz_svih_reci_rez;	
 }
 

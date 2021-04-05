@@ -1,5 +1,5 @@
 <?php
-// require_once 'osnova/inicijalizacija.php';
+
 //$niz - rezultat pretrage, niz koji treba da se sortira
 //$uslov - kljuc asocijativnog niza na osnovu cije vrednosti se soritra niz po rastucem poretku
 //	glavna svrha je da sortira q baze da se vrati najredje koriscena rec
