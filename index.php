@@ -1,10 +1,10 @@
 <?php
 require_once 'osnova/inicijalizacija.php';
 $korisnik = new Korisnik();
-if (!$korisnik->je_ulogovan_k()) 
+/*if (!$korisnik->je_ulogovan_k()) 
 {
 	Preusmeri::na('registracija.php');
-}
+}*/
 
 ?>
 <!DOCTYPE html>
