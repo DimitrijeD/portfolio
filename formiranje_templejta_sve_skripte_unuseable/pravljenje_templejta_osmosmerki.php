@@ -6,7 +6,7 @@
 <body>
 	<div class="container">
 		<ul id="stranice">
-			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
+			<li><a href="index.php">Почетна страница</a></li>
 
 			<li><a href="igraOsmosmerka.php">Игра осмосмерка</a></li>
 			<li><a href="odjava.php">Одјава</a></li>
@@ -28,10 +28,11 @@
 		<?php
 		require_once 'osnova/inicijalizacija.php';
 		$korisnik = new Korisnik();
-		
+		// kako neko ne bi slucajno otvorio stranicu
+		Preusmeri::na('index.php');
 		if( !($korisnik->ima_prava('admin')) )
 		{
-			Preusmeri::na('pocetna_stranica.php');
+			Preusmeri::na('index.php');
 		} 
 		/*
 

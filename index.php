@@ -16,7 +16,7 @@ if (!$korisnik->je_ulogovan_k())
 <body>
 	<div class="container">
 		<ul id="stranice">
-			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
+			<li><a href="index.php">Почетна страница</a></li>
 			<li><a href="igraOsmosmerka.php"> Осмосмерка</a></li>
 			<li><a href="kvadratna_spl.php"> Интерполација</a></li>
 			<li><a href="asimetricna_osmosmerka.php">Асиметрична осмосмерка</a></li>

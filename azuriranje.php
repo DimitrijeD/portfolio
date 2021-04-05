@@ -3,7 +3,7 @@ require_once 'osnova/inicijalizacija.php';
 $korisnik = new Korisnik();
 if(!$korisnik->je_ulogovan_k())
 {
-	Preusmeri::na('pocetna_stranica.php');
+	Preusmeri::na('index.php');
 }
 ?>
 <!DOCTYPE html>
@@ -15,7 +15,7 @@ if(!$korisnik->je_ulogovan_k())
 <body>
 	<div class="container">
 		<ul id="stranice">
-				<li><a href="pocetna_stranica.php">Почетна страница</a></li>
+				<li><a href="index.php">Почетна страница</a></li>
 				<li><a href="igraOsmosmerka.php"> Осмосмерка</a></li>
 				<li><a href="kvadratna_spl.php"> Интерполација</a></li>
 				<li><a href="asimetricna_osmosmerka.php">Асиметрична осмосмерка</a></li>
@@ -83,7 +83,7 @@ if(!$korisnik->je_ulogovan_k())
 							'korisnicko_ime' => Input::vrati('korisnicko_ime')
 							));
 						Sesija::prikazi_jednom('home', 'унети подаци су ажурирани.');
-						Preusmeri::na('pocetna_stranica.php');
+						Preusmeri::na('index.php');
 					} 
 					catch(Exeption $e){
 						die($e->getMessage());

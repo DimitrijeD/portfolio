@@ -7,7 +7,7 @@ if (!$korisnik->je_ulogovan_k())
 }
 if( (!$korisnik->ima_prava('admin')) ) 
 {
-	Preusmeri::na('pocetna_stranica.php');
+	Preusmeri::na('index.php');
 }
 ?>
 <!DOCTYPE html>
@@ -19,7 +19,7 @@ if( (!$korisnik->ima_prava('admin')) )
 <body>
 	<div class="container">
 		<ul id="stranice">
-			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
+			<li><a href="index.php">Почетна страница</a></li>
 			<li><a href="igraOsmosmerka.php"> Осмосмерка</a></li>
 			<li><a href="kvadratna_spl.php"> Интерполација</a></li>
 			<li><a href="asimetricna_osmosmerka.php">Асиметрична осмосмерка</a></li>
@@ -53,7 +53,7 @@ if( (!$korisnik->ima_prava('admin')) )
 	
 	<?php
 	if( !($korisnik->ima_prava('admin')) ){
-		Preusmeri::na('pocetna_stranica.php');
+		Preusmeri::na('index.php');
 	}
 // ----------------------------------------------------------------------------------------------------------------------
 	$bp_instanca = Baza_podataka::vrati_instancu();

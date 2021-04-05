@@ -35,7 +35,7 @@
 
 					if($prijava)
 					{
-						Preusmeri::na('pocetna_stranica.php');
+						Preusmeri::na('index.php');
 						// echo 'пријављен!';
 					} else {
 						echo '<div id="greske">';

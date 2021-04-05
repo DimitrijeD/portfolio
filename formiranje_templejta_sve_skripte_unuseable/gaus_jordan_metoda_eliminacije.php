@@ -379,7 +379,7 @@ function  glavna_dijagonala_sort_not_null($niz_elemenata_glavne_dijagonale, $mat
 
 // gaus_jordan_metoda_eliminacije($matrica);
 
-sort_gl_dijagonala_($matrica);
+// sort_gl_dijagonala_($matrica);
 // print_r(glavna_dijagonala(15));
 
 ?>

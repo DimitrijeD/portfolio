@@ -2,7 +2,7 @@
 require_once 'osnova/inicijalizacija.php';
 $korisnik = new Korisnik();
 if ($korisnik->je_ulogovan_k()){
-	Preusmeri::na('pocetna_stranica.php');
+	Preusmeri::na('index.php');
 } 
 ?>
 <!DOCTYPE html>

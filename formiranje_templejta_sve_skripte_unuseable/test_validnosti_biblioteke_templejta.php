@@ -6,7 +6,7 @@
 <body>
 	<div class="container">
 		<ul id="stranice">
-			<li><a href="pocetna_stranica.php">Почетна страница</a></li>
+			<li><a href="index.php">Почетна страница</a></li>
 
 			<li><a href="igraOsmosmerka.php">Игра осмосмерка</a></li>
 			<li><a href="odjava.php">Одјава</a></li>
@@ -28,13 +28,15 @@
 		<?php
 		require_once 'osnova/inicijalizacija.php';
 		$korisnik = new Korisnik();
-		ini_set('max_execution_time', '0');
-		// ini_set('memory_limit', '100M');
 
 		if( !($korisnik->ima_prava('admin')) )
 		{
-			Preusmeri::na('pocetna_stranica.php');
+			Preusmeri::na('index.php');
 		} 
+		ini_set('max_execution_time', '0');
+		// ini_set('memory_limit', '100M');
+
+
 		
 		$niz_fajlova_koji_nedostaju = array();
 
