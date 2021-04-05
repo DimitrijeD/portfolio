@@ -20,6 +20,7 @@ $GLOBALS['niz_konfiguracija'] = array(
 );
 */
 // ------------------------------------------------------------Remote sql conn --------------------------------------------------
+var_dump('skjdfbsfdsd');
 $GLOBALS['niz_konfiguracija'] = array(
 	'mysql' => array (
 		'domacin' => "remotemysql.com",  // host
