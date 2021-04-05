@@ -1,12 +1,31 @@
 <?php
 session_start();
-
+/*
+// local conn
 $GLOBALS['niz_konfiguracija'] = array(
 	'mysql' => array (
 		'domacin' => "127.0.0.1", 
 		'korisnicko_ime_bp' => "root",
 		'sifra_bp' => "",
 		'baza_podataka' => "baza_podataka_osmosmerka1"
+	),
+	'zapamti_me' => array(
+		'ime_kolacica' => 'hes',
+		'kolacic_istice' => 604800 // U sekundama = 7 dana
+	),
+	'sesija' => array(
+		'ime_sesije' => 'korisnik',
+		'ime_tokena' => 'token' 
+	)
+);
+*/
+// ------------------------------------------------------------Remote sql conn --------------------------------------------------
+$GLOBALS['niz_konfiguracija'] = array(
+	'mysql' => array (
+		'domacin' => "remotemysql.com",  // host
+		'korisnicko_ime_bp' => "dcvmGS6q3i",
+		'sifra_bp' => "EpLgXLKBif",
+		'baza_podataka' => "dcvmGS6q3i"
 	),
 	'zapamti_me' => array(
 		'ime_kolacica' => 'hes',
