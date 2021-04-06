@@ -33,9 +33,9 @@ $GLOBALS['brojevi_sa_tackom_zarezom'] = array('.', ',' , '0', '1', '2', '3', '4'
 
 // hash table za cirilicu
 $GLOBALS['hash_t_cirilica'] = array(
-	"а" => "A", 
+	"а" => "А", 
 	"б" => "Б", 
-	"в" => "Б", 
+	"в" => "В", 
 	"г" => "Г", 
 	"д" => "Д", 
 	"ђ" => "Ђ", 
