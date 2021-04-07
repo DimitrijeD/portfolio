@@ -74,7 +74,7 @@ if (!$korisnik->je_ulogovan_k())
 		<p>Црвена поља ће бити коришћена за прављење осмосмерки, док не црвена (светло плава-леви клик на поље) неће.</p>
 		<p>Ако се унесу превелике вредности осмосмерке формираће се полупразна осмосмерка и потрајаће пар секунди.</p>
 		<p>Само се једна осмосмерка прави што значи да неће увек бити: потпуна са решењем или са свим пољима попуњеним словима.</p>			
-		<p>Тренутно не постоји горње ограничење димензија осмосмерки.</p>
+		<p>Највећа дозвољена величина и за ред, и за колону је 40.</p>
 		<p>Алгоритам је оптимизован за ~ 15*15 до 25*25.</p>
 	</details>
 	<!-- forma_o_i  - za osmosmerku i interpolaciju -->
@@ -155,11 +155,13 @@ if (!$korisnik->je_ulogovan_k())
 		$niz_kriterijum_validacija = array(
 			'red_velicina_osmosmerke' => array(
 				'obavezno' => TRUE,
-				'velicina_osmosmerke' => 3				
+				'velicina_osmosmerke' => 3,
+				'max_osmosmerka' => 40				
 			),
 			'kolona_velicina_osmosmerke' => array(
 				'obavezno' => TRUE,
-				'velicina_osmosmerke' => 3				
+				'velicina_osmosmerke' => 3,
+				'max_osmosmerka' => 40				
 			),	
 			'reci_od_korisnika' => array(
 				'obavezno' => FALSE,

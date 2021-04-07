@@ -37,6 +37,15 @@ class Validacija
 								$this->dodaj_gresku("Најмања дозвољена величина осмосмерке је {$vrednost_pravila} или није унет цео број.");											
 							}
 						break;
+
+						case 'max_osmosmerka':
+							$vrednost_inputa = (int)$vrednost_inputa; 
+							// var_dump($vrednost_inputa);
+							if($vrednost_inputa > $vrednost_pravila) 
+							{																	
+								$this->dodaj_gresku("Највећа дозвољена величина осмосмерке је {$vrednost_pravila} или није унет број.");											
+							}
+						break;
 						
 						case 'min':
 							if(strlen($vrednost_inputa) < $vrednost_pravila) // ispisuje da rec(za osm) mora biti 6 karaktera
