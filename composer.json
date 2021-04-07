@@ -1,2 +1,5 @@
 {
+    "require": {
+        "zbateson/mb-wrapper": "^1.0"
+    }
 }
