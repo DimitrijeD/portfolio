@@ -1,6 +1,0 @@
-{
-    "name": "DimitrijeD/portfolio",
-    "require": {
-        "ext-mbstring": "*"
-    }
-}
