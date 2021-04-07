@@ -1,5 +1,7 @@
 {
     "require": {
-        "zbateson/mb-wrapper": "^1.0"
+        "zbateson/mb-wrapper": "^1.0",
+        "ext-mbstring": "*",
+        "php": "^7.2.3"
     }
 }
