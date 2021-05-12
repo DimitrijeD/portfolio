@@ -27,7 +27,7 @@ if ($korisnik->je_ulogovan_k()){
 					'email' => array(
 						'obavezno' => TRUE,
 						'min' => 2,
-						'max' => 20,
+						'max' => 40,
 						'jedinstven' => 'korisnici' 
 					),
 					'sifra' => array(
