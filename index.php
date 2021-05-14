@@ -79,6 +79,8 @@ if (!$korisnik->je_ulogovan_k())
 	// echo Sesija::vrati(Konfiguracija::vrati_konf('sesija/ime_sesije'));
 	// print_r($_SESSION);
 	?>
+	<br>
+	<h3>Веб сајт служи да презентује пројекте на којима је аутор Димитрије Дракулић самостално радио. Следеће картице су линкови за те пројекте на којима кожете погледати садржај и уносити податке у форме. </h3>
 
 	<div id="pocetna_stranica">
 		<a href="igraOsmosmerka.php">

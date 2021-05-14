@@ -118,6 +118,15 @@ h2{
   /*margin-bottom: 0;*/
   color: #4d4d4d; 
 }
+h3{
+  font-size: 16px;
+  text-align: left;
+  background-color: #eff5f5;
+  padding: 5px 5px;
+  margin: auto;
+  width: 90%;
+  color: #595959; 
+}
 /*-------------------------------------------------PRIKAZ DODATNIH PODATAKA---------------------------------------*/
 .dodatni_podaci{
   padding: 5px;
