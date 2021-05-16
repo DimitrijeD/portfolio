@@ -1,0 +1,37 @@
+#tekst_slike {
+	font-family: "Times New Roman", Times, serif;
+	text-align-last: center;
+	font-style: italic;
+	color: #003300;
+	opacity: 0.9;
+	
+}
+
+#slika_mat{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+/*  width: 40%;*/
+}
+
+#tekst_tabele{
+	font-family: "Times New Roman", Times, serif;	
+	text-align-last: center;
+}
+
+#mat_sadrzaj{
+	font-family: "Times New Roman", Times, serif;
+	font-size: 17px;
+}
+
+#formula{
+	font-family: "Times New Roman", Times, serif;
+	font-size: 18px;
+	text-align-last: center;
+	width: 46.5%;
+	margin: auto;
+	background-color: #F5F6FD;
+	border-right: 1px solid black;
+	border-left: 1px solid black;
+
+}

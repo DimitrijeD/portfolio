@@ -61,6 +61,8 @@ require_once 'funkcije/obradi_asim_polja.php';
 require_once 'funkcije/asm_uklanjanje_polja.php';
 require_once 'funkcije/da_li_je_sav_str_latinicni.php';
 require_once 'funkcije/da_li_je_sav_str_cirilicni.php';
+require_once 'funkcije/heading_linkovi_stranica.php';
+
 // otvori sve nizove pisama
 require_once 'nizovi_slova_pisama/nizovi_slova_pisama.php';
 
