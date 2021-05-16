@@ -33,7 +33,7 @@ if (!$korisnik->je_ulogovan_k())
 				Posmatrajući algoritam sa višeg nivoa apstrakcije, on imitira jednosmerno, dužinski ograničeno kretanje šahovske figure kraljica po šahovskoj tabli.
 			</p>
 
-			<img id="slika_mat" src="slike\mat_osm\Slika1.png" style="width: 30%;">
+			<img id="slika_mat" src="slike\mat_osm\slika1-1.png" style="width: 30%;">
 
 			<p id="tekst_slike">Slika 1. Svi legalni potezi kraljice od tog polja tako da je najkraći potez dužine 3 polja</p>
 
