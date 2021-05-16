@@ -6,9 +6,7 @@ if (!$korisnik->je_ulogovan_k())
 {
 	Preusmeri::na('registracija.php');
 }
-if( !($korisnik->ima_prava('admin')) ){
-	Preusmeri::na('index.php');
-} 
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -61,7 +59,7 @@ if( !($korisnik->ima_prava('admin')) ){
 					// print "</pre>";
 					// print_r(count($niz_svih_puteva));
 				echo '<div class="dodatni_podaci">';
-				echo "<h3>Формула за рачунање укупног броја путева које осмосмерка може имати</h3>";
+				echo "<h3>Формула за рачунање укупног броја путева које осмосмерка може имати</h3><br>";
 				echo "<h5>Величина осмосмерке је <strong>" . $br_puteva_klasa->vrati_red() . " * " . $br_puteva_klasa->vrati_kolonu() . "</strong></h5>";
 				echo "<h5>Укупан број путева добијен класом (математичком формулом) Testiranje_formule_broja_puteva_u_osm је: <strong>" . $br_puteva_rez . "</strong></h5>";
 				echo "<h5>Број путева у \$niz_svih_puteva из класе Osmosmerka_templejt je: <strong>" . count($niz_svih_puteva) . "</strong></h5>";
@@ -103,12 +101,12 @@ if( !($korisnik->ima_prava('admin')) ){
 				// print_r($niz_za_simuliranje_puteva);
 				echo "<br>";
 				echo '<div class="dodatni_podaci">';
-				echo "<h3>Табела темплејта осмосмерке </h3>";
+				echo "<h3>Табела темплејта осмосмерке </h3><br>";
 				echo "<h5>Вредност сваког поља је онолика колико пута се појављује у \$niz_svih_puteva из класе Osmosmerka_templejt</h5>";
 				echo "<h5>Други начин посматрања на вредност у пољима је следећи: <br> кроз неко поље (r, k) постоји толико начина (број у пољу) да се упише реч у било ком смеру (али да пролази кроз то поље) тако да су дозвољене дужине речи од 3 до 12.</h5>";
 				echo "<br>";
 				echo napravi_tabelu($niz_za_simuliranje_puteva);
-				echo '</div>';
+				echo '</div><br>';
 			}
 		}
 		?>

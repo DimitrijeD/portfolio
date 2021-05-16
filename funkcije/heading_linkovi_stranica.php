@@ -41,7 +41,7 @@ function napravi_heading($prava_korisnika, $id_korisnika)
 					<div class="dropdown">
 						<div class="dropbtn">Алати за осмосмерке</div>
 							<div class="dropdown-content">
-								<a href="testiranje_rada_klase_osmosmerka_templejt.php"> Алат за тестирање рада класе Osmosmerka_tempejt </a> 
+								<a href="testiranje_rada_klase_osmosmerka_templejt.php"> Интерна умреженост осмосмерке </a> 
 								<a href="mat_osm.php"> Математика осмосмерке </a>
 							</div>
 					</div>
