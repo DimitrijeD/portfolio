@@ -40,7 +40,7 @@ if (!$korisnik->je_ulogovan_k())
 	// print_r($_SESSION);
 	?>
 	<br>
-	<h3>Веб сајт покрећу бесплатне услуге <a href="https://www.heroku.com/home" target="_blank">Heroku</a> и <a href="https://remotemysql.com/index.html" target="_blank">Remote MySql</a>. Служи да презентује пројекте (<i>портфолио</i>) на којима је аутор Димитрије Дракулић самостално радио. Следеће картице су линкови за те пројекте на којима кожете погледати садржај и уносити податке у форме. </h3>
+	<h3>Веб сајт покрећу бесплатне услуге <a href="https://www.heroku.com/home" target="_blank">Heroku</a> и <a href="https://remotemysql.com/index.html" target="_blank">Remote MySql</a>. Сајт служи да презентује пројекте (<i>портфолио</i>) на којима је аутор Димитрије Дракулић самостално радио. Следеће картице су линкови за те пројекте које можете погледати. </h3>
 
 	<div id="pocetna_stranica">
 		<a href="igraOsmosmerka.php">
@@ -78,12 +78,6 @@ if (!$korisnik->je_ulogovan_k())
 			</a>
 			
 	</div>
-<!-- 	<div id="pocetna_stranica">
-		<a href="#">
-			<div id="blok">
-			</div>
-		</a>
-	</div> -->
 
 	<div id="content-wrap">
 		<footer id="footer"><small>&copy; Copyright 2021.   Dimitrije Drakulić</small></footer>

@@ -110,13 +110,13 @@ div#to_do_list li{
 }
 
 h2{
-  font-size: 20px;
+  font-size: 19px;
   text-align: center;
   background-color: #e0ebeb;
   padding: 5px 5px;
   margin-top: 0;
   /*margin-bottom: 0;*/
-  color: #4d4d4d; 
+  color: #666666; 
 }
 h3{
   font-size: 16px;

@@ -21,7 +21,7 @@ if (!$korisnik->je_ulogovan_k())
 		echo napravi_heading($korisnik->podaci_k()->tip_korisnika, $korisnik->podaci_k()->id);
 		?>
 
-		<h2>Приказ свих могућих путева која "r*k" осмосмерка може да има, тако што свако поље приказане таблице је једнако броју појављивања тог поља у $niz_svih_puteva .</h2>
+		<h2>Табела умрежености осмосмерке</h2>
 
 		<form id="forma_o_i" action="" method="post">
 			<div id="paralelno">
@@ -37,10 +37,15 @@ if (!$korisnik->je_ulogovan_k())
 			<input type="submit" name="napravi_osmosmerku" value="Направи осмосмерку">
 		</form><br>
 
+
+		<!--
+		---------------------------------------------------------- FALI VALIDACIJA --------------------------------------------------------------------  
+		-->
 		<?php
 		if(isset($_POST['red_velicina_osmosmerke']) AND $_POST['kolona_velicina_osmosmerke'])
 		{
-			if ($_POST['red_velicina_osmosmerke'] >= 3 AND $_POST['kolona_velicina_osmosmerke'] >= 3)  
+			if ( ($_POST['red_velicina_osmosmerke'] >= 3  AND $_POST['kolona_velicina_osmosmerke'] >= 3 ) AND  
+				 ($_POST['red_velicina_osmosmerke'] <= 60 AND $_POST['kolona_velicina_osmosmerke'] <= 60) ) 
 			{
 
 				$red = (int)$_POST['red_velicina_osmosmerke'];

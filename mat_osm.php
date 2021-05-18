@@ -10,6 +10,12 @@ if (!$korisnik->je_ulogovan_k())
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="UTF-8">
+	<meta name="description" content="Matematika iza osmosmerke">
+	<meta name="keywords" content="kombinatorika, osmosmerka, ukupan broj načina">
+	<meta name="author" content="Dimitrije Drakulić">
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+	
 	<link rel="stylesheet" href="./css/stil.css">
 	<link rel="stylesheet" href="./css/stil_mat.css">
 	<title>Matematika iza osmosmerke</title>
@@ -24,13 +30,13 @@ if (!$korisnik->je_ulogovan_k())
 
 		<div style="width: 99%; margin: auto; background-color: #ffffff;">
 			<h2> Matematika iza slagalice osmosmerke </h2>	
-
+			<br>
 			<p id="mat_sadrzaj">
 				Pravljenje osmosmerki na ovom veb sajtu se zasniva na pristupu "brute force" - ovo su podaci, obradi ih. Da bi svaka slagalica bila drugačija, neophodno je da, napravljena slagalica, bude drugačija od ostalih čak i kad unesete iste dimenzije i opcionalne reči. To se postiže nedeterminisanim ponašanjem koda čija implementacija zahteva kompleksan pristup razvijanja algoritma.
 			</p>
 
 			<p id="mat_sadrzaj">
-				Posmatrajući algoritam sa višeg nivoa apstrakcije, on imitira jednosmerno, dužinski ograničeno kretanje šahovske figure kraljica po šahovskoj tabli.
+				Posmatrajući algoritam sa višeg nivoa apstrakcije, on imitira jednosmerno, dužinski ograničeno kretanje šahovske figure kraljica po šahovskoj tabli. U daljem tekstu, kretanje kraljice po tabli, postavljanje reči u osmosmerku i pojam put imaju apsolutno isto značenje za kontekst problematike kojom se rad bavi.
 			</p>
 
 			<img id="slika_mat" src="slike\mat_osm\slika1-1.png" style="width: 30%;">
@@ -38,34 +44,64 @@ if (!$korisnik->je_ulogovan_k())
 			<p id="tekst_slike">Slika 1. Svi legalni potezi kraljice od tog polja tako da je najkraći potez dužine 3 polja</p>
 
 			<p id="mat_sadrzaj">
-				U sledećem poglavlju će biti objašnjeno kako se izračunava ukupan broj načina da se odigraju svi   potezi kraljicom na šahovskoj tabli pod definisanim ograničenjima da su red i kolona šahovske table promenljive veličine (minimalno 3 za obe veličine, dok nemaju maksimalno ograničenje) i svaki potez (u daljem tekstu predstavlja sinonim pojmu put - path) može biti dužina od 3 do 12 polja.
+				U sledećim poglavljima će biti objašnjeno kako se izračunava <b>ukupan broj načina</b> da se odigraju svi legalni potezi kraljicom na šahovskoj tabli pod definisanim ograničenjima:
 			</p>
+
+			<ul style="padding-top: 1px; margin-top: 1px;" id="mat_sadrzaj">
+				<li id="mat_sadrzaj" style="padding-top: 1px; margin-top: 1px;" id="mat_sadrzaj">
+					svaki potez je različit od svih ostalih, tj. imaju jedinstvenu kombinaciju početnih i krajnjih polja,
+				</li>
+				<li id="mat_sadrzaj">
+					ne postoji nijedna druga figura na tabli koja <i>ometa</i> kretanje kraljice po tabli,
+				</li>
+				<li id="mat_sadrzaj"> 
+					da su red i kolona šahovske table promenljive veličine (<i>minimalno 3 za obe veličine, dok nemaju maksimalno ograničenje</i>), 
+				</li>
+				<li id="mat_sadrzaj">
+					svaki potez (<i>u daljem tekstu predstavlja sinonim pojmu <b>put</b> - path</i>) može biti bilo kojih dužina od 3 do 12 polja (<i>jer su reči, koje se koriste u osmosmerkama na ovom sajtu, nekih od tih dužina</i>).
+				</li>
+				<li id="mat_sadrzaj">
+					svaki potez mora biti jedan od 8 jednosmernih pravaca (stoga <b>osmo</b><i>smerka</i>).
+				</li>
+			</ul>
+			
 			
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">Ukupan broj načina</h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">Ukupan broj načina</h3>
 
 			<p id="mat_sadrzaj">
 				Postavljanje jedne reči u osmosmeru imitra kretanje šahovske figure kraljica (eng. queen, neki je nazivaju i dama) po praznoj šahovskoj tabli.
 			</p>
 
+			<!-- 
 			<p id="mat_sadrzaj">
 				Postavlja se sledeće pitanje: koliki je ukupan broj načina da se odigra potez sa kraljicom pod sledećim uslovima: 
 			</p>
 
+			
 			<ul>
 				<li id="mat_sadrzaj">za svako polje se mora odigrati potez kao da je početno (postaviti damu na svako polje i odigrati sve legalne poteze od tog polja),</li>
 				<li id="mat_sadrzaj">minimalne dimenzije tabele su 3*3 dok nemaju maksimalno ograničenje,</li>
-				<li id="mat_sadrzaj">validan potez predstavlja kretanje kraljice od nekog polja tabele, do drugog polja table tako da je najkraći potez jednosmerno udaljen 3 polja (trenutno polje + 2) a najduži 12 polja.</li>
-			</ul>
+				<li id="mat_sadrzaj">validan potez predstavlja kretanje kraljice od nekog polja tabele, do drugog polja table tako da je najkraći potez jednosmerno udaljen 3 polja (trenutno polje + 2) a najduži 12 polja, i naravno sve dužine između.</li>
+			</ul> 
+			-->
 
 			<p id="mat_sadrzaj">U daljem tekstu:</p>
 
-			<ul>
-				<li id="mat_sadrzaj">skraćenica r, označava veličinu reda osmosmerke (ili šahovske table);</li>
-				<li id="mat_sadrzaj">skraćenica k, označava veličinu kolone osmosmerke (ili šahovske table);</li>
-				<li id="mat_sadrzaj">skraćenica osm. - osmosmerka;</li>
-				<li id="mat_sadrzaj">pojam put, označava jedan jedinstven (legalan) potez kraljice ili jedno mesto u osm. u koje se može uneti reč.</li>
+			<ul style="padding-top: 1px; margin-top: 1px;">
+				<li id="mat_sadrzaj" style="padding-top: 1px; margin-top: 1px;" id="mat_sadrzaj">skraćenica <b>r</b>, označava veličinu reda osmosmerke (ili šahovske table);</li>
+				<li id="mat_sadrzaj">skraćenica <b>k</b>, označava veličinu kolone osmosmerke (ili šahovske table);</li>
+				<li id="mat_sadrzaj">skraćenica <b>osm.</b> - osmosmerka;</li>
+				<li id="mat_sadrzaj">pojam <b>put</b>, označava jedan jedinstven (legalan) potez kraljice ili jedno mesto u osm. u koje se može uneti reč.</li>
 			</ul>
+
+			<p id="mat_sadrzaj">
+				Za vreme razvijanja aplikacije za pravljenje osm. , napravljen je matematički model za izračunavanje ukupnog broja načina da se reč (<i>pod definisanim ograničenjima</i>) upiše u osmosmerku. Pored toga što je služio kao test ispravnosti koda, on se može i prošiti prateći korake i posledice simetričnosti koje su objašnjene u sledećim poglavljima. Tako da ako imate sličan matematički problem koji trebate da rešite, nek vam ovaj sadržaj pomogne oko pristupa analize problema, njegovog razlaganja na jednostavnije probleme i na kraju, konačnog rešenja.   
+			</p>
+
+			<p id="mat_sadrzaj">
+				Na <a href="/testiranje_rada_klase_osmosmerka_templejt.php" style="color: #007acc;"><i>sledećoj stranici</i></a> možete uneti veličine reda i kolone, kako bi vam se na ekranu prikazala celobrojna tablica koja prikazuje vrednosti ukupnog broja načina da kroz <b>to polje</b> prođe kraljica ili da se od svih kombinacija, reč upiše tako da prođe kroz to polje. U daljem tekstu nije opisano kako dobiti konkretne vrednosti nekog polja tabele jer je to druga tema koja će možda kasnije bili objašnjena na sajtu.   
+			</p>			
 
 			<img id="slika_mat" src="slike\mat_osm\Slika2.jpg" style="width: 27%;">
 
@@ -79,29 +115,29 @@ if (!$korisnik->je_ulogovan_k())
 			<p id="tekst_slike">Slika 3. Pojam put (potez) u šahu</p>
 
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">Analiza formiranja funkcije za izračunavanje ukupnog broja puteva</h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">Analiza formiranja funkcije za izračunavanje ukupnog broja puteva</h3>
 
-			<p id="mat_sadrzaj">Najočigledniji pristup je da se svaki smer posmatra kao zasebna funkcija sa parametrima reda i kolone:</p>
+			<p id="mat_sadrzaj">Najočigledniji pristup je da se svaki smer posmatra kao zasebna funkcija, sa istim parametrima reda i kolone:</p>
 
-			<p id="formula">Ukupno = gore + dole + levo + desno + gore_levo + gore_desno + dole_levo + dole_desno  <i>(1)</i></p>
+			<p id="formula"><b>U</b>kupno(r, k) = gore + dole + levo + desno + gore_levo + gore_desno + dole_levo + dole_desno  <i>(1)</i></p>
 			
 			<ul>
-				<li id="mat_sadrzaj">Ukupno - broj svih puteva;</li>
+				<li id="mat_sadrzaj"><b>U</b>kupno - broj svih puteva, funkcija red i kolone, koja ujedno predstavlja cilj pronalaska ovog teksta;</li>
 				<li id="mat_sadrzaj">gore, dole, levo ... - ukupan broj puteva sa tim smerom;</li>
 			</ul>
 
 			<p id="mat_sadrzaj">U ostatku poglavlja će biti objašnjene:</p>
 
-			<ul>
-				<li id="mat_sadrzaj">analize pronalaženja promenljivih iz prethodne funkcije,</li>
+			<ul style="padding-top: 1px; margin-top: 1px;">
+				<li id="mat_sadrzaj" style="padding-top: 1px; margin-top: 1px;">analize pronalaženja koeficijenata funkcija, a time i <i><b>U</b>kupno(r, k)</i> </li>
 				<li id="mat_sadrzaj">pretpostavke na osnovu oučene simetrije ili matematičkog poretka,</li>
 				<li id="mat_sadrzaj">testovi pretpostavki i izvedenih funkcija,</li>
-				<li id="mat_sadrzaj">konačna funkcija na osnovu zbira ukupnih brojeva putava za individualne smerove.</li>
+				<!-- <li id="mat_sadrzaj">konačna funkcija na osnovu zbira ukupnih brojeva putava za individualne smerove.</li> -->
 			</ul>
 
 			<p id="mat_sadrzaj">
 				Usled simetričnosti grafičke usmerenosti osm. , suprotni smerovi imaju isti broj puteva.	
-				Ukupan broj puteva sa smerom dole je isti kao i ukupan broj puteva sa smerom gore. Ako se osmosmerka rotira za 180° , putevi koji su ranije bili smera dole, postaju smera gore. Tih novih smerova gore, ima isto onoliko koliko je bilo ranije (pre rotacije) smerova dole. Isto to važi za sve ostale smerove:
+				Ukupan broj puteva sa smerom dole je isti kao i ukupan broj puteva sa smerom gore (slika 4.). Ako se osmosmerka rotira za 180° , putevi koji su ranije bili smera dole, postaju smera gore. Tih novih smerova gore, ima isto onoliko koliko je bilo ranije (pre rotacije) smerova dole. Isto to važi za sve ostale <b>suprotne</b> smerove:
 			</p>
 
 			<img id="slika_mat" src="slike\mat_osm\Slika4.jpg">
@@ -116,17 +152,17 @@ if (!$korisnik->je_ulogovan_k())
 
 			<p id="formula">Ukupno = 2 * (U_smer_desno + U_smer_dole) + 2 * (U_dole_desno + U_gore_desno) <i>(2)</i></p>
 
-			<p id="mat_sadrzaj">Može biti bilo koja kombinacija, trebala bi da daje isto rešenje za Ukupno.</p>
+			<p id="mat_sadrzaj">Može biti bilo koja kombinacija, trebala bi da daje isto rešenje za <b>U</b>kupno.</p>
 
-			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">U_smer_desno</h3>
+			<br><br>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">U_smer_desno - Ukupan broj puteva sa smerom desno</h3>
 
 			<p id="mat_sadrzaj">Mogu se podeliti u brojeve puteva sa dužinama 3, ... 12:</p>
 
 			<p id="formula">U_smer_desno = red * ( br_dužina_3 + br_dužina 4 + . . . + br_dužina_12 )   <i>(3)</i></p>
 
 			<p id="mat_sadrzaj">
-				Tablice ispod su dobijene brojanjem sa primera osm. ukupnih brojeva puteva dozvoljenih dužina za promenljive veličine kolone za samo jedan red, što znači da množenjem veličine dimenzije reda sa U_smer_desno se dobije konačni broj puteva smera desno.
+				Tablice ispod su dobijene brojanjem sa primera osm. ukupnih brojeva puteva dozvoljenih dužina za promenljive veličine kolone <b>za samo jedan red</b>, što znači da množenjem veličine reda sa U_smer_desno se dobije konačni broj puteva smera desno.
 			</p>
 
 			<p id="tekst_tabele">Broj puteva dužine 3 polja</p>
@@ -141,23 +177,24 @@ if (!$korisnik->je_ulogovan_k())
 
 			<img id="slika_mat" src="slike\mat_osm\Slika6.jpg">
 
-			<p id="tekst_slike">Slika 6. Kad je red 3, može samo jedan jedinstven put dužine 3 da stane</p>
+			<p id="tekst_slike">Slika 6. Kad je kolona 3, može samo jedan jedinstven put (<i>smera desno</i>) dužine 3 da stane</p>
 
 			<img id="slika_mat" src="slike\mat_osm\Slika7.jpg">
 
-			<p id="tekst_slike">Slika 7. Kad je put dužine 4, mogu dva jedinstvena put-a dužine 3 da stanu</p>
+			<p id="tekst_slike">Slika 7. Kad je kolona 4, mogu dva jedinstvena put-a (<i>smera desno</i>) dužine 3 da stanu</p>
 
-			<br>
+			<br><br>
 			<p id="tekst_tabele">Broj puteva dužine 4 polja</p>
 
 			<img id="slika_mat" src="slike\mat_osm\Tabela2.png" style="width: 34%;">
 
 			<p id="mat_sadrzaj">
-				Kod puteva dužine 4, već se pojavljuje slučaj da put ne može da stane u osm. čije su kolone veličine 3, što je očigledno. Druga razlika sa prethodnom tabelom je što su brojevi puteva uvek za 3 manji od veličine kolone.
+				Kod puteva dužine 4, već se pojavljuje slučaj da put ne može da stane u osm. čije su kolone veličine 3, što se podrazumeva. Druga razlika sa prethodnom tabelom je što su brojevi puteva uvek za <b>3</b> manji od veličine kolone, dok su u prethodnoj tabeli, uvek bili za <b>2</b> manji. 
 			</p>
 
 			<p id="formula">br_dužina_4 = k - 3  <i>(5)</i></p>
 
+			<br><br>
 			<p id="tekst_tabele">Broj puteva dužine 5 polja</p>
 
 			<img id="slika_mat" src="slike\mat_osm\Tabela3.png" style="width: 34%;">
@@ -166,8 +203,9 @@ if (!$korisnik->je_ulogovan_k())
 
 			<p id="formula">br_dužina_5 = k - 4  <i>(6)</i></p>
 
+			<br><br>
 			<p id="mat_sadrzaj">
-				Ako se pretpostavi da sve ostale dužine puteva prate isti logički poredak, može se zaključiti da je konačna funkcija svih puteva smera desno za bilo koju r*k osm.:
+				Ako se pretpostavi da sve ostale dužine puteva prate isti logički poredak (<i>kako se ne bi pravile tablice za sve smerove i sve njihove dozvoljene dužine</i>), može se pretpostaviti, sa visokom sigurnošću, da je konačna <b>funkcija svih puteva smera desno</b> za bilo koju r*k osm.:
 			</p>
 
 			<img id="slika_mat" src="slike\mat_osm\Tabela4.png" style="width: 47%;">
@@ -187,7 +225,7 @@ if (!$korisnik->je_ulogovan_k())
 			<p id="tekst_slike">Slika 8. Primer slučaja za k = 6  i  k = 11</p>
 
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">U_smer_dole</h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">U_smer_dole - Ukupan broj puteva sa smerom dole</h3>
 
 			<p id="mat_sadrzaj">
 				Druga pretpostavka je da isti princip važi i za puteve smerova gore-dole usled simetričnosti koja se uočava nakon rotiranja osm. za 90°. 
@@ -197,7 +235,7 @@ if (!$korisnik->je_ulogovan_k())
 			<img id="slika_mat" src="slike\mat_osm\Tabela5.png" style="width: 47%;">
 
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">Broj puteva za dijagonalne smerove </h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">Broj puteva za dijagonalne smerove </h3>
 
 			<p id="mat_sadrzaj">
 				Za razliku od horizontalnih i vertikalnih smerova (gore, dole, levo i desno) koji zavise samo od veličine jedne dimenzije, tj. izračuna se ukupan broj puteva za jedan red ili kolonu, koji se pomnoži sa redom ili kolonom, dijagonalni smerovi zavise i od veličina red i kolone .<br>
@@ -216,13 +254,13 @@ if (!$korisnik->je_ulogovan_k())
 			<p id="mat_sadrzaj">Pitanje preostaje, kako dobiti koeficijente za ove dve funkcije.</p>
 
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">Dole_desno putevi dužine 3   ( dole_desno_duž_3 )</h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">U_dole_desno - Ukupan broj puteva smera dole desno</h3>
 			<br>
 
 			<p id="formula">U_dole_desno = dole_desno_duž_3 + dole_desno_duž_4 + ... + dole_desno_duž_12  <i>(13)</i></p>
 
 			<p id="mat_sadrzaj">
-				Za smer dole_desno, broj puteva dužine 3 ima sve više kako rastu i red i kolona. Za razliku od horizontalnih i vertikalnih, uvde je kontra-intuitivno formirati formulu tako što će se pronaći broj puteva za svaku dijagonalu i množiti sa ukupnim brojem dijagonala jer što je kraća dijagonala, to manje puteva ima. Dakle očito postoji neka matematička šema koja se razlikuje od h/v smerova.
+				Za smer dole_desno, broj puteva dužine 3 ima sve više kako rastu i red i kolona. Za razliku od horizontalnih i vertikalnih, ovde je kontra-intuitivno formirati funkciju tako što će se pronaći broj puteva za svaku dijagonalu i množiti sa ukupnim brojem dijagonala jer što je kraća dijagonala, to manje puteva ima. Dakle očito postoji neka matematička šema koja se razlikuje od h/v smerova.
 			</p>
 
 			<p id="mat_sadrzaj">Ako bi se posmatrala tabela u kojoj su predstavljeni brojevi puteva dužina 3 za smer dole_desno:</p>
@@ -240,13 +278,13 @@ if (!$korisnik->je_ulogovan_k())
 			<p id="formula">U_dole_desno_duž_3 = ( r - 2 ) * ( k - 2)   <i>(14)</i></p>
 
 			<p id="mat_sadrzaj">
-				Za r,k -priprada, naci hex val- [3, 12] , rezultat funkcije mora biti isti kao i u tablici. Iako su za svaki slučaj isti, ne može se znati unapred da je pretpostavka tačna sve dok se ne testira konačna funkcija za sve smerove.
+				Za <b>r,k &#8712 [3, 12]</b> , rezultat funkcije mora biti isti kao i u tablici. Iako su za svaki slučaj isti, ne može se znati unapred da je pretpostavka tačna sve dok se ne testira konačna funkcija za sve smerove.
 			</p>
 
 			<img id="slika_mat"  src="slike\mat_osm\Tabela8.png" style="width: 25%;">
 
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">Dole_desno putevi dužine 4   ( dole_desno_duž_4 )</h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">Dole_desno putevi dužine 4   ( dole_desno_duž_4 )</h3>
 
 			<img id="slika_mat" src="slike\mat_osm\Tabela9.png" style="width: 32%;">
 
@@ -274,10 +312,10 @@ if (!$korisnik->je_ulogovan_k())
 			<p id="mat_sadrzaj">Uzima se maksimum jer reč dužine n slova ne može stati u dijagonalni smer osm. čija je bar jedna dimenzija manja od n.</p>
 
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">Ukupan broj puteva (samo za r,k ≥ 12)</h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">Ukupan broj puteva (samo za r, k ≥ 12)</h3>
 
 			<p id="mat_sadrzaj">
-				Kroz programski kod se ispostavilo da je ukupan broj puteva smera gore desno isti kao i U_dole _desno samo treba da se obrnu red i kolona:
+				Kroz programski kod se ispostavilo da je ukupan broj puteva smera <i>gore desno</i> isti kao i ukupan broj puteva smera <i>dole desno</i> samo treba da se obrnu red i kolona kao argumenti funkcijama:
 			</p>
 
 			<img id="slika_mat" src="slike\mat_osm\Tabela12.png" style="width: 47%;">
@@ -296,7 +334,7 @@ if (!$korisnik->je_ulogovan_k())
 			<img id="slika_mat" src="slike\mat_osm\Tabela15.png" style="width: 37%;">
 
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">Funkcija ukupnog broja puteva je kvadratna</h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">Funkcija ukupnog broja puteva je kvadratna</h3>
 			
 			<p id="mat_sadrzaj">
 				Kada se posmatraju slučajevi gde su r = k , funkcija se dodatno skraćuje i time lakše oučava da je kvadratna;<br> 
@@ -307,7 +345,7 @@ if (!$korisnik->je_ulogovan_k())
 
 			<p id="mat_sadrzaj">za r = k , radi preglednosti <b>x</b> = r = k :</p>
 
-			<p id="formula">Ukupno_x = 80x2 - 780x + 2020   <i>(19)</i></p>
+			<p id="formula">Ukupno_x = 80x<sup>2</sup> - 780x + 2020   <i>(19)</i></p>
 
 			<p id="mat_sadrzaj">funkcija je kvadratna (<i>parabola</i>):</p>
 
@@ -317,7 +355,7 @@ if (!$korisnik->je_ulogovan_k())
 			<p id="tekst_slike">Slika 9. Graf kvadratne funkcije za r = k</p>
 
 			<br>
-			<h3 style="border-top: 1px solid #a9b1ef">Zaključak dobijen matematičkom funkcijom</h3>
+			<h3 style="border-top: 1px solid #a9b1ef; border-left: 1px solid #7e8ae7">Zaključak dobijen matematičkom funkcijom</h3>
 
 			<p id="mat_sadrzaj">
 				Vrednosti koeficijenata su direktan proizvod ograničenja dužine puta i broja smerova koji postoje.
@@ -325,11 +363,11 @@ if (!$korisnik->je_ulogovan_k())
 			</p>
 
 			<p id="mat_sadrzaj">
-				Najbolje bi bilo da se koeficijenti od samog početka zamene min/max funkcijama kako bi konačna funkcija mogla da izračuna ukupan broj puteva za 8 smerova bilo koje dimenzije r*k. Ova funkcija bi već mogla da se koristi za druge problematike teorije grafova.
+				Najbolje bi bilo da se koeficijenti od samog početka zamene min/max funkcijama kako bi konačna funkcija mogla da izračuna ukupan broj puteva za 8 smerova bilo koje dimenzije r*k. Ova funkcija bi već mogla da se koristi za druge problematike kombinatorike i teorije grafova.
 			</p>
 
 			<p id="mat_sadrzaj">
-				Za svaku r*k osm. gde su r,k ≥3, može se izvršiti izračunavanje ukupnog broja puteva na <a href="testiranje_rada_klase_osmosmerka_templejt.php"><u> ovoj stranici</u> </a> i prikazati tablica prolazaka tih puteva, kroz svako polje. Pošto bi bilo neefikasno da se svaki put prikazuje kao strelica, u tablici, vrednost svakog polja se uvećava za 1 ako je deo nekog puta.
+				Za svaku r*k osm. gde su r,k ≥3, može se izvršiti izračunavanje ukupnog broja puteva na <a href="/testiranje_rada_klase_osmosmerka_templejt.php" style="color: #007acc;"><i>sledećoj stranici</i></a> i prikazati tablica prolazaka tih puteva, kroz svako polje. Pošto bi bilo neefikasno da se svaki put prikazuje kao strelica, u tablici, vrednost svakog polja se uvećava za 1 ako je deo nekog puta.
 			</p>
 
 			<br><br>
