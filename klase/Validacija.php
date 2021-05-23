@@ -70,7 +70,7 @@ class Validacija
 						
 						case 'jedinstven': 
 							$provera_za_jedinstven_podatak = $this->bp_instanca->pronadji($vrednost_pravila, array($tip_kriterijuma, '=', $vrednost_inputa)); 
-							// var_dump($provera_za_jedinstven_podatak);
+
 							if ($provera_za_jedinstven_podatak->br_redova()) 
 							// ako vrati 1 ili vise, znaci da postoji korisnik sa tim imenom
 							{

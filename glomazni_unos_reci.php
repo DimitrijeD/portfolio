@@ -29,103 +29,138 @@ if( !($korisnik->ima_prava('admin')) ){
 		<p1>Напомена: користити ову страницу са опрезом. Прихватањем масовног усноса речи из текст документа може негативно утицати на квалитет направљених осмосмерки. Документ који унесете у форму мора бити на српском језику!</p1>
 
 		<?php
-	
-		if (Input::postoji()  ) //file_exists(Input::vrati('dokument'))
+
+		$unos_u_bazu_spreman = false;
+
+		if(isset($_FILES['image']))
+		{
+			// var_dump($_FILES);
+			$errors= array();
+			$file_name = $_FILES['image']['name'];
+			$file_size =$_FILES['image']['size'];
+			$file_tmp =$_FILES['image']['tmp_name'];
+			$file_type=$_FILES['image']['type'];
+			$avoid_notice = explode('.', $_FILES['image']['name']);
+			$file_ext=strtolower(end( $avoid_notice ));
+
+			$extensions= array("txt");
+
+			if(in_array($file_ext,$extensions)=== false)
+			{
+				$errors[]="fajl nije .txt ekstenzije";
+			}
+
+			// asd_test.txt
+			if(empty($errors)==true){
+				move_uploaded_file($file_tmp,"tekstovi_za_popunjavanje_baze_recima/".$file_name);
+				$unos_u_bazu_spreman = true;
+			} else {
+				print_r($errors);
+			}
+		}
+
+		if ($unos_u_bazu_spreman)
 		{
 			$prvi_deo_puta = "tekstovi_za_popunjavanje_baze_recima/"; 
-			$ime_dokumenta = Input::vrati('dokument');
+			$ime_dokumenta = $file_name;
+			$put_dokumenta = $prvi_deo_puta.$ime_dokumenta;
+		
 
-			$extenzija = ".txt";
-			$put_dokumenta = $prvi_deo_puta.$ime_dokumenta.$extenzija;
-			
+			// echo "<br>";
+			// var_dump($ime_dokumenta);
+			// var_dump($put_dokumenta);
+			// echo "<br>";
+
 			if(!file_exists($put_dokumenta) )
 			{
 				?> <br><p>Име документа које сте унели не постоји у фајлу 'tekstovi_za_popunjavanje_baze_recima'. Прочитајте поново упутство и пробајте опет.</p><br> <?php
 				exit();
-			}
-			
-			// bez praznih elemenata u nizi, bez reci kracih od 5 karaktera (jer ima previse kratkih reci, pa da se izbalansira odnos duzih i kracih reci), 
-			// a u validaciji ce da ukloni reci vece od 12
-			$niz_svih_reci_dokumenta =  unos_reci_za_osmosmerke_iz_fajla( file_get_contents($put_dokumenta) );
+			} elseif($unos_u_bazu_spreman) {	
 
-			if (empty($niz_svih_reci_dokumenta)) 
-			{
-				?>  <div id="greske">
-						<p>Ниједна реч није припремљена за унос. Могући разлози могу бити:</p><br>
-						<p>Документ није .txt формата.</p>
-						<p>Документ нема никакав текст у себи.</p>
-						<p>Документ има текст у себи али није сачуван.</p>
-						<p>Ниједна реч у том тексту није валидна што се може десити ако је текст лоше конвертован из неког другог формата (PDF). Proverite da li je tekst ispravan. </p>
-					</div>
-				<?php
-				exit();
-			}
-			
-			// print_r($niz_svih_reci_dokumenta);
+				// bez praznih elemenata u nizi, bez reci kracih od 5 karaktera (jer ima previse kratkih reci, pa da se izbalansira odnos duzih i kracih reci), 
+				// a u validaciji ce da ukloni reci vece od 12
+				$niz_svih_reci_dokumenta =  unos_reci_za_osmosmerke_iz_fajla( file_get_contents($put_dokumenta) );
 
-			$broj_unetih_reci = 0;
-			$unete_reci = array();
-			$neuspele = array();
-
-			for($kljuc_reci = 0; $kljuc_reci < count($niz_svih_reci_dokumenta); $kljuc_reci++ )
-			{
-				// odlucivanje u koju tabelu posto za svaku duzinu reci od 3 do 12 postoji zasebna tabela
-				$duzina_reci = mb_strlen($niz_svih_reci_dokumenta[$kljuc_reci]['rec']);
-				$tabela_za_reci = 'reci_osmosmerke_' . $duzina_reci; 
-
-				$niz_kriterijum_validacija = array(
-					'rec' => array(
-						'obavezno' => TRUE,
-						'min' => 6,
-						'max' => 24, // jer su sva cirilicna slova 2 bajta
-						'jedinstven' => $tabela_za_reci
-					)
-				);
-
-				$validacija = new Validacija();
-				$rez_validacije = $validacija->provera_unosa($niz_svih_reci_dokumenta[$kljuc_reci], $niz_kriterijum_validacija);
-
-				if( $rez_validacije->validacija_uspela() )
+				if (empty($niz_svih_reci_dokumenta)) 
 				{
-					$bp_instanca = Baza_podataka::vrati_instancu();
-					
-					// unos reci sa imenom dokumenta iz kog je ta rec uneta
-					$red_tabele = array('rec'=>$niz_svih_reci_dokumenta[$kljuc_reci]['rec'], 'tip_unosa'=>$ime_dokumenta);
-					$bp_instanca->unesi($tabela_za_reci, $red_tabele);
-
-					//ako nije bilo gresaka u upitu
-					if (! $bp_instanca->greska_u_pretrazi() )
-					{
-						$broj_unetih_reci++;
-						$unete_reci[] = $niz_svih_reci_dokumenta[$kljuc_reci]['rec'];
-					}
-
-				} else 
-				{
-					$neuspele[$kljuc_reci] = array($niz_svih_reci_dokumenta[$kljuc_reci]['rec'], $rez_validacije->sve_greske() );
+					?>  <div id="greske">
+							<p>Ниједна реч није припремљена за унос. Могући разлози могу бити:</p><br>
+							<p>Документ није .txt формата.</p>
+							<p>Документ нема никакав текст у себи.</p>
+							<p>Документ има текст у себи али није сачуван.</p>
+							<p>Ниједна реч у том тексту није валидна што се може десити ако је текст лоше конвертован из неког другог формата (PDF). Proverite da li je tekst ispravan. </p>
+						</div>
+					<?php
+					exit();
 				}
-			}
+				
+				// print_r($niz_svih_reci_dokumenta);
 
-			if($broj_unetih_reci)
-			{
-				echo "<br>". "Број успешно унетих речи је: {$broj_unetih_reci} " . "<br>";
-				echo "Унете речи су: " . "<br>";
-				foreach ($unete_reci as $key => $value) 
+				$broj_unetih_reci = 0;
+				$unete_reci = array();
+				$neuspele = array();
+
+				for($kljuc_reci = 0; $kljuc_reci < count($niz_svih_reci_dokumenta); $kljuc_reci++ )
 				{
-					echo $value . ", ";
-				}
-					
-			} else {
-				echo '<div id="greske">';
-				echo "<br>" . "<br>" . "<br>". "<p>Ниједна реч није унета у базу!" . "</p>"; 
-				foreach ($neuspele as $kljuc_niza_sve_za_rec => $niz_sve_za_rec) 
-				{
-					echo "<p>Реч: " . $neuspele[$kljuc_niza_sve_za_rec][0] . " , разлози:  </p>";
-					foreach ($neuspele[$kljuc_niza_sve_za_rec][1] as $kljuc_razloga => $razlog) 
+					// odlucivanje u koju tabelu posto za svaku duzinu reci od 3 do 12 postoji zasebna tabela
+					$duzina_reci = mb_strlen($niz_svih_reci_dokumenta[$kljuc_reci]['rec']);
+					$tabela_za_reci = 'reci_osmosmerke_' . $duzina_reci; 
+
+					$niz_kriterijum_validacija = array(
+						'rec' => array(
+							'obavezno' => TRUE,
+							'min' => 6,
+							'max' => 24, // jer su sva cirilicna slova 2 bajta
+							'jedinstven' => $tabela_za_reci
+						)
+					);
+
+					$validacija = new Validacija();
+					$rez_validacije = $validacija->provera_unosa($niz_svih_reci_dokumenta[$kljuc_reci], $niz_kriterijum_validacija);
+
+					if( $rez_validacije->validacija_uspela() )
 					{
-						echo "<p>" . $neuspele[$kljuc_niza_sve_za_rec][1][$kljuc_razloga] . "</p>";
+						$bp_instanca = Baza_podataka::vrati_instancu();
+						
+						// unos reci sa imenom dokumenta iz kog je ta rec uneta
+						$exploded_name = explode(".", $ime_dokumenta);
+						$red_tabele = array('rec'=>$niz_svih_reci_dokumenta[$kljuc_reci]['rec'], 'tip_unosa'=>$exploded_name[0]);
+						$bp_instanca->unesi($tabela_za_reci, $red_tabele);
+
+						//ako nije bilo gresaka u upitu
+						if (! $bp_instanca->greska_u_pretrazi() )
+						{
+							$broj_unetih_reci++;
+							$unete_reci[] = $niz_svih_reci_dokumenta[$kljuc_reci]['rec'];
+						}
+
+					} else 
+					{
+						$neuspele[$kljuc_reci] = array($niz_svih_reci_dokumenta[$kljuc_reci]['rec'], $rez_validacije->sve_greske() );
 					}
-					echo "</div>";
+				}
+
+				if($broj_unetih_reci)
+				{
+					echo "<br>". "Број успешно унетих речи је: {$broj_unetih_reci} " . "<br>";
+					echo "Унете речи су: " . "<br>";
+					foreach ($unete_reci as $key => $value) 
+					{
+						echo $value . ", ";
+					}
+						
+				} else {
+					echo '<div id="greske">';
+					echo "<br>" . "<br>" . "<br>". "<p>Ниједна реч није унета у базу!" . "</p>"; 
+					foreach ($neuspele as $kljuc_niza_sve_za_rec => $niz_sve_za_rec) 
+					{
+						echo "<p>Реч: " . $neuspele[$kljuc_niza_sve_za_rec][0] . " , разлози:  </p>";
+						foreach ($neuspele[$kljuc_niza_sve_za_rec][1] as $kljuc_razloga => $razlog) 
+						{
+							echo "<p>" . $neuspele[$kljuc_niza_sve_za_rec][1][$kljuc_razloga] . "</p>";
+						}
+						echo "</div>";
+					}
 				}
 			}
 		}
@@ -134,16 +169,11 @@ if( !($korisnik->ima_prava('admin')) ){
 		?>
 		
 		<h2> Масовни унос речи у табелу за осмосмерку (reci_osmosmerke_N) </h2>
-		<h2> Не сећам се да ли сам теситрао ову скрипту, todo!</h2>
-		<form action="" method="post" >
-			<div>
-				<label for="dokument">Унесите име документа</label>
-				<input type="text" id="dokument" name="dokument" autocomplete="on">
-			</div>
-			<!-- <input type="radio" name="pismo" value="ћирилица" checked="checked">Текст је у ћирили<br> -->
 
-			<input type="submit" value="Масовно уношење речи у базу података">
-		</form> 
+		<form action="" method="POST" enctype="multipart/form-data">
+			<input type="file" name="image" />
+			<input type="submit"/>
+		</form>
 		
 		<div id="content-wrap">
 			<footer id="footer"><small>&copy; Copyright 2021.   Dimitrije Drakulić</small></footer>
