@@ -22,7 +22,7 @@ if (!$korisnik->je_ulogovan_k())
 <div id="container" class="container"> 
 
 	<?php
-	echo napravi_heading($korisnik->podaci_k()->tip_korisnika, $korisnik->podaci_k()->id);
+	echo napravi_heading($korisnik->podaci_k()->tip_korisnika, $korisnik->podaci_k()->id); //, $_GET['id_osm']
 	?>
 	
 	<h2> Игра осмосмерка </h2>
@@ -73,6 +73,10 @@ if (!$korisnik->je_ulogovan_k())
 	</form>
 
 	<?php
+
+/*	if ($_GET['id_osm'] != '') {
+		// var_dump($_GET['id_osm']);
+	}*/
 
 	if (Input::vrati('napravi_osmosmerku')) 
 	{

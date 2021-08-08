@@ -118,8 +118,10 @@ class Korisnik
 		$tip_korisnika = $this->bp_instanca->pronadji('vrste_korisnika', array('id', '=', $this->podaci_k()->tip_korisnika));
 		if($tip_korisnika->br_redova())
 		{
+			// var_dump($tip_korisnika->prvi_rez()->ovlascenje);
 			$ovlascenje = json_decode ($tip_korisnika->prvi_rez()->ovlascenje, TRUE);
-			if($ovlascenje[$kljuc] == TRUE)
+			// var_dump($ovlascenje);
+			if(isset($ovlascenje[$kljuc]) AND $ovlascenje[$kljuc] == TRUE)
 			{
 				return TRUE;
 			}
