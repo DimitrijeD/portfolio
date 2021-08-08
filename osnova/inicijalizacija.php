@@ -41,7 +41,6 @@ $GLOBALS['niz_konfiguracija'] = array(
 	)
 );
 
-*/
 // -----------------------------------------------------Ucitavanje fajlova------------------------------------------------
 spl_autoload_register(function($klasa){
 	require_once 'klase/' . $klasa . '.php';
