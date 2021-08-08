@@ -2,7 +2,7 @@
 session_start();
 
 // local conn
-
+/*
 $GLOBALS['niz_konfiguracija'] = array(
 	'mysql' => array (
 		'domacin' => "127.0.0.1", 
@@ -19,10 +19,11 @@ $GLOBALS['niz_konfiguracija'] = array(
 		'ime_tokena' => 'token' 
 	)
 );
+*/
  
 
 // ------------------------------------------------------------Remote sql conn --------------------------------------------------
-/*
+
 $GLOBALS['niz_konfiguracija'] = array(
 	'mysql' => array (
 		'domacin' => "remotemysql.com",  // host
@@ -39,27 +40,7 @@ $GLOBALS['niz_konfiguracija'] = array(
 		'ime_tokena' => 'token' 
 	)
 );
-*/
-/*
-// https://www.phpmyadmin.co/index.php
-// https://www.freemysqlhosting.net/account/
-// https://mail.google.com/mail/u/0/#inbox/FMfcgzGkZQHdXSzSVCkCNhxnBhsCCJfr
-$GLOBALS['niz_konfiguracija'] = array(
-	'mysql' => array (
-		'domacin' => "sql11.freemysqlhosting.net",  // host
-		'korisnicko_ime_bp' => "sql11424945",
-		'sifra_bp' => "BxLErvzRHc",
-		'baza_podataka' => "sql11424945"
-	),
-	'zapamti_me' => array(
-		'ime_kolacica' => 'hes',
-		'kolacic_istice' => 604800 // U sekundama = 7 dana
-	),
-	'sesija' => array(
-		'ime_sesije' => 'korisnik',
-		'ime_tokena' => 'token' 
-	)
-);
+
 */
 // -----------------------------------------------------Ucitavanje fajlova------------------------------------------------
 spl_autoload_register(function($klasa){
